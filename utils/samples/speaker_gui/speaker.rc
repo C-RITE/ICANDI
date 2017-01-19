@@ -1,0 +1,129 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+#include "resource.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+SPEAKERICON             ICON    DISCARDABLE     "SPEAKER.ICO"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+PLAYTONEDLGBOX DIALOG DISCARDABLE  25, 20, 231, 74
+STYLE WS_POPUP | WS_CAPTION
+CAPTION "Speaker"
+FONT 8, "Helv"
+BEGIN
+    DEFPUSHBUTTON   "Exit",IDD_CLOSE,169,53,50,14
+    PUSHBUTTON      "Play Tone",IDD_PLAY_TONE,12,18,50,14
+    EDITTEXT        IDC_FREQ,154,7,67,13,ES_AUTOHSCROLL
+    LTEXT           "Frequency (Hertz):",IDC_STATIC,74,10,64,13
+    LTEXT           "Duration (Milliseconds):",IDC_STATIC,74,29,76,13
+    EDITTEXT        IDC_DURATION,154,26,67,15,ES_AUTOHSCROLL
+    PUSHBUTTON      "About",IDC_ABOUT,87,53,50,14
+    PUSHBUTTON      "Play Chime",IDC_PLAY_CHIME,12,53,50,14
+END
+
+ABOUTDLGBOX DIALOG DISCARDABLE  10, 25, 181, 89
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About the Speaker Sample"
+FONT 8, "Helv"
+BEGIN
+    LTEXT           "Speaker Sample v1.0\r\n\rThis sample accesses the \
+      on-board  speaker through the WinDriver's interface.\n\r\n \
+      Jungo Confidential. Copyright (c) 2008 Jungo Ltd.  http://www.jungo.com",
+                    IDC_STATIC,34,12,145,53,SS_NOPREFIX | NOT WS_GROUP
+    DEFPUSHBUTTON   "OK",IDD_OK,70,72,40,14
+    ICON            SPEAKERICON,IDC_STATIC,5,6,21,20
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""resource.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    ABOUTDLGBOX, DIALOG
+    BEGIN
+        RIGHTMARGIN, 179
+        BOTTOMMARGIN, 86
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

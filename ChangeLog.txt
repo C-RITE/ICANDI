@@ -1,0 +1,6 @@
+06/04/2015: Updated code for minor fixes, app crashing when clicked on stabilization window when there is no stabilization runnning etc
+05/12/2015: Disabled creating CSV files when the stabilization is not running
+04/02/2015: Updated desinusoiding routine for all orientations of grid
+03/21/2015: All avi writing and reading has been updated using OpenCV, must copy OpenCV folder into ProgramFiles folder and add path to SYSTEM_PATH
+03/16/2015: All internal experiments have been deleted and cleaned code
+08/05/2013: Independent stimulus delivery for all three channels added
