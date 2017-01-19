@@ -1,0 +1,140 @@
+WDREG
+
+This file contains:
+1. An overview of the wdreg sample.
+2. The contents of the wdreg/ directory.
+3. Instructions for compiling the wdreg sample.
+4. Guidelines for converting wdreg from a console-mode (CUI)
+   application to a graphical (GUI) application.
+
+
+1. Overview
+   =========
+   The wdreg sample can be used to dynamically load and unload the WinDriver
+   kernel module as well as Kernel PlugIn drivers you create on Windows.
+
+   On Windows 2000/XP/Server 2003 the sample can also be used to install
+   device-INF files, thereby replacing the slower manual installation
+   process using Windows' Device Manager (which can still be used).
+
+   For Windows 2000/XP the wdreg utility is provided in two forms: WDREG and
+   WDREG_GUI. Both utilities can be run from the command line, and provide
+   the same functionality. The difference is that WDREG_GUI displays
+   installation messages graphically, while WDREG displays them in console mode.
+   For Windows 98/Me the WDREG16 16-bit version of this utility is provided.
+   Pre-compiled executables of all versions of this utility can be found under
+   the WinDriver\utils directory.
+   
+   For a detailed description of the wdreg utility (in its different forms)
+   and its usage, refer to the WinDriver User's Manuals (found under the
+   WinDriver/docs/ directory).
+
+
+2. Files:
+   ======
+   This section describes the sub-directories and files provided under the
+   wdreg/ directory.
+   
+   The source code was created by Jungo.
+
+   - wdreg.cpp
+         The main file, which parses the command line, validates the
+         parameters and carries out the WDREG actions.
+
+   - Driver.h
+         A header file for WDREG's classes and actions.
+      
+   - DriverNT4.cpp
+         Implementation of WDREG's actions for WindowsNT4 drivers.
+  
+   - DriverVXD.cpp
+         Implementation of WDREG's actions for Windows95/98 VXD drivers
+         (obsolete).
+  
+   - DriverWDM.cpp
+         Implementation of WDREG's actions for Windows2000/XP/Server 2003
+         WDM drivers.
+      
+   - DriverWDM16.cpp
+         Implementation of WDREG's actions for Windows98/Me WDM drivers
+         (16-bit).
+      
+   - Driver98.cpp
+         Implementation of WDREG's actions for Windows98/Me non-WDM drivers 
+         (16-bit).
+
+   - common_install.cpp
+         Installation library.
+      
+   - common_install.h
+         A header file for the common_install.cpp installation library.
+
+   - common16.cpp
+         16-bit installation library.
+      
+   - common16.h
+         A header file for the common16.cpp 16-bit installation library.
+
+   - ui.cpp
+         User interface library.
+
+   - ui.h
+         A header file for the ui.cpp user interface library.
+
+   - files.txt
+        Describes the sample files.
+ 
+   - wdreg16.mak
+     Makefile for building the 16-bit version of the sample (wdreg16.exe).
+   
+   - wdreg16.def
+     Definitions file for building the 16-bit version of the sample
+     (wdreg16.exe).
+
+   - x86/ directory - Windows x86 32-bit files:
+     - msdev_6/ sub-directory:
+       - wdreg.dsp
+             MSDEV 6.0 project file
+       - wdreg.dsw
+             MSDEV 6.0 workspace file
+  
+  - WIN32/ sub-directory:
+    - wdreg.exe
+          The compiled sample program for Windows
+    
+    You can find the GUI version of this utility (wdreg_gui.exe) and the
+    16-bit version (wdreg16.exe) under the WinDriver\utils directory.
+
+
+3. Compiling the sample:
+   =====================
+ - Compiling the 32-bit wdreg.exe utility (for Windows 2000/XP/Server 2003):
+   -------------------------------------------------------------------------
+   To compile wdreg.exe for Windows 2000/XP/Server 2003 you need the Windows
+   Driver Development Kit (DDK).
+   The provided sample MSDEV project (see above) was created for the Windows
+   2k DDK. In order to build the sample using a different version of the DDK
+   you will need to modify the sample project file.
+
+   To build the sample:
+   
+   1) Install the Windows DDK and set the BASEDIR environment variable to the
+      location of your DDK library.
+
+   2) Open the msdev_6\wdreg.dsw workspace file with MSDEV, set the active
+      build configuration for the wdreg.dsp project to your target build
+      (e.g. WIN32 - win2k free) and build the project from the IDE.
+
+ - Compiling the 16-bit wdreg16.exe utility (for Windows 98/Me):
+   -------------------------------------------------------------
+   To compile wdreg16.exe for Windows 98/Me you need the Windows 98
+   Driver Development Kit (DDK).
+
+   To build the sample:
+   
+   1) Install the Windows 98 DDK and define the MSVC152 (compiler's directory)
+      and DDKROOT (Windows 98 DDK directory) environment variables.
+
+   2) Build the sample by running the following command from the command line:
+      NMAKE /f wdreg16.mak
+

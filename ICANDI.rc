@@ -1,0 +1,535 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\ICANDI.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#include ""afxprint.rc""       // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\icandi.ico"
+IDR_ICANDITYPE          ICON                    "res\\ICANDIDoc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR  24, 23
+BEGIN
+    BUTTON      ID_CAMERA_CONNECT
+    BUTTON      ID_CAMERA_DISCONNECT
+    SEPARATOR
+    BUTTON      ID_STABLIZE_GO
+    BUTTON      ID_STABLIZE_SUSPEND
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU 
+BEGIN
+    POPUP "&Camera"
+    BEGIN
+        MENUITEM "&Connect\tCtrl+O",            ID_CAMERA_CONNECT
+        MENUITEM "&Disonnect\tCtrl+C",          ID_CAMERA_DISCONNECT
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Setup"
+    BEGIN
+        MENUITEM "&ICANDI &Parameters\tCtrl+W", ID_SETUP_PARAMS
+        MENUITEM SEPARATOR
+        MENUITEM "&Desinusoid\tCtrl+D",         ID_SETUP_DESINUSOID
+        MENUITEM "S&ave Reference\tCtrl+A",     ID_SETUP_SAVEREF
+        MENUITEM "Movie Normalize",             ID_SETUP_MOVIENORMALIZE
+    END
+    POPUP "S&tablilze"
+    BEGIN
+        MENUITEM "&Go",                         ID_STABLIZE_GO
+        MENUITEM "&Stop",                       ID_STABLIZE_SUSPEND
+        MENUITEM "&Load Ext. Ref.",             ID_STABLIZE_LOAD_EXT_REF
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About ICANDI...",            ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS 
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 330, 82
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About ICANDI"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LTEXT           "Realtime video stablization, Version 1.0.0.1",IDC_STATIC,44,10,211,8,SS_NOPREFIX
+    LTEXT           "Montana State University, University of California - Berkeley",IDC_STATIC,44,25,211,8
+    DEFPUSHBUTTON   "OK",IDOK,273,7,50,14,WS_GROUP
+    LTEXT           "Authors: Qiang Yang, David Arathorn, Pavan Tiruveedhula",IDC_STATIC,44,41,144,8
+    LTEXT           "Copyright (C) 2006-2013",IDC_STATIC,44,57,119,8
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+END
+
+IDD_DLG_PARAMS DIALOGEX 0, 0, 569, 274
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit ICANDI Parameters"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_EDIT_F_XDIM,61,7,60,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_F_YDIM,61,26,60,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PATCH_CNT,61,45,60,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_LAYER_CNT,174,6,60,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_ITER_NUM,174,25,60,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_K1,174,45,60,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_GTHRESH,292,7,60,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_SRCTHRESH,292,26,60,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_L_XDIM,67,102,49,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_L_YDIM,118,102,49,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_L_YDIM_0,169,102,49,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_X_OFFSET,220,102,49,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_Y_OFFSET,271,102,49,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_X_SHIFT,322,102,49,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_Y_SHIFT,373,102,49,14,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "&Insert",IDC_BUTTON_ADD,7,70,50,14,WS_DISABLED
+    PUSHBUTTON      "&Remove",IDC_BUTTON_REMOVE,7,86,50,14,WS_DISABLED
+    PUSHBUTTON      "&Update",IDC_BUTTON_UPDATE,7,102,50,14,WS_DISABLED
+    PUSHBUTTON      "Move &Up",IDC_BUTTON_UP,7,253,50,14,WS_DISABLED
+    PUSHBUTTON      "Move &Down",IDC_BUTTON_DOWN,59,253,50,14,WS_DISABLED
+    PUSHBUTTON      "&Load LUT",IDC_BUTTON_LUT,182,256,50,10
+    DEFPUSHBUTTON   "OK",IDOK,452,253,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,512,253,50,14
+    CONTROL         "List2",IDC_LIST_PARAMS,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_NOLABELWRAP | WS_DISABLED | WS_BORDER | WS_TABSTOP,15,130,408,104
+    RTEXT           "Patch Counts:",IDC_STATIC,8,46,48,11
+    RTEXT           "Frame Width:",IDC_STATIC,8,10,48,11
+    RTEXT           "Frame Height",IDC_STATIC,7,29,49,11
+    GROUPBOX        "Patches Information",IDC_STATIC,7,120,425,119,WS_DISABLED
+    CTEXT           "L_XDIM",IDC_STATIC,66,91,36,8,WS_DISABLED
+    CTEXT           "L_YDIM",IDC_STATIC,113,91,36,8,WS_DISABLED
+    CTEXT           "X_offset",IDC_STATIC,218,91,36,8,WS_DISABLED
+    CTEXT           "Y_offset",IDC_STATIC,266,91,36,8,WS_DISABLED
+    CTEXT           "FX_offset",IDC_STATIC,321,91,36,8,WS_DISABLED
+    CTEXT           "FY_offset",IDC_STATIC,374,91,36,8,WS_DISABLED
+    RTEXT           "Layer Counts:",IDC_STATIC,122,9,46,11
+    RTEXT           "Iteration Num:",IDC_STATIC,122,29,47,11
+    RTEXT           "K1:",IDC_STATIC,142,47,27,11
+    RTEXT           "GTHRESH:",IDC_STATIC,243,10,43,11
+    RTEXT           "SRCTHRESH:",IDC_STATIC,238,29,49,11
+    CTEXT           "L_YDIM0",IDC_STATIC,166,91,36,8,WS_DISABLED
+    GROUPBOX        "Filtering",IDC_STATIC,356,7,76,29
+    COMBOBOX        IDC_COMBO_FILTER,361,19,67,54,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "nVidia Card for FFT",IDC_STATIC,356,41,76,46
+    COMBOBOX        IDC_GPU_DEV_LIST,361,61,66,79,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Desinusoid",IDC_CHECK_DESINUSOID,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,126,256,51,10
+    CONTROL         "Invert Traces",IDC_CHECK_INVERTTRACES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,251,256,58,10
+    GROUPBOX        "Digital Marks Selection",IDC_STATIC,439,7,123,87,BS_CENTER
+    GROUPBOX        "Gain = 1",IDC_STATIC,445,30,53,57,BS_CENTER
+    GROUPBOX        "Gain != 1",IDC_STATIC,504,30,52,57,BS_CENTER
+    CONTROL         "IR",IDC_IR_GAIN1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,454,44,23,10
+    CONTROL         "Red",IDC_RED_GAIN1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,454,53,29,10
+    CONTROL         "Green",IDC_GR_GAIN1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,454,62,35,10
+    CONTROL         "Blue",IDC_BLUE_GAIN1,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,454,71,30,10
+    CONTROL         "IR",IDC_IR_GAIN2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,512,43,23,10
+    CONTROL         "Red",IDC_RED_GAIN2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,512,52,29,10
+    CONTROL         "Green",IDC_GR_GAIN2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,512,61,35,10
+    CONTROL         "Blue",IDC_BLUE_GAIN2,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,512,70,30,10
+    CONTROL         "Turn Off",IDC_TURN_ON_OFF,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,480,19,42,10
+END
+
+IDD_DLG_DESINUSOID DIALOG  0, 0, 658, 426
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Desinusoiding Setup"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDIT_FREQ_HORZ,62,383,58,14,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_FREQ_VERT,62,403,58,15,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_GRID_SIZE,178,384,33,13,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_GRID_NUMB,178,403,33,14,ES_AUTOHSCROLL | WS_DISABLED
+    PUSHBUTTON      "Load Grids File",IDC_LOAD_GRIDS,218,383,64,16
+    CONTROL         "Slider1",IDC_FRAME_ID,"msctls_trackbar32",TBS_NOTICKS | TBS_ENABLESELRANGE | WS_DISABLED | WS_TABSTOP,213,402,141,16
+    PUSHBUTTON      "Start Frame",IDC_START_FRAME,349,382,64,16,WS_DISABLED
+    PUSHBUTTON      "End Frame",IDC_END_FRAME,351,403,62,16,WS_DISABLED
+    PUSHBUTTON      "Desinusoid",IDC_RUN_DESINU,413,383,64,16,WS_DISABLED
+    PUSHBUTTON      "Save LUT",IDC_SAVE_LUT,413,403,64,16,WS_DISABLED
+    DEFPUSHBUTTON   "OK",IDOK,587,382,64,16
+    PUSHBUTTON      "Cancel",IDCANCEL,588,403,63,16
+    LTEXT           "",IDC_FRAME_ID_MSG,317,403,40,15
+    GROUPBOX        "Grid Position -- X",IDC_FRAME_X,7,7,282,140
+    GROUPBOX        "Grid Position -- Y",IDC_FRAME_Y,369,7,282,140
+    GROUPBOX        "Warpped image",IDC_FRAME_WARP,7,157,282,215
+    GROUPBOX        "Unwarpped image",IDC_FRAME_UNWARP,369,157,282,215
+    RTEXT           "Pixel Clock (Hz)",IDC_FREQ_HORZ,9,384,50,13
+    RTEXT           "H-Sync (Hz)",IDC_FREQ_VERT,11,405,49,13
+    RTEXT           "Grid Size (deg)",IDC_GRID_SIZE,123,384,49,13
+    RTEXT           "Grid Number",IDC_GRID_NUMBER,123,404,49,13
+    CONTROL         "Slider1",IDC_SCROLLBAR_X,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | NOT WS_VISIBLE | WS_TABSTOP,7,138,280,9
+    CONTROL         "Slider2",IDC_SCROLLBAR_Y,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | NOT WS_VISIBLE | WS_TABSTOP,369,138,282,7
+    CONTROL         "H/V grids",IDC_HV_GRID,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,294,385,49,11
+    LTEXT           "Pix/Deg-X:",IDC_PIX_PER_DEGX,488,382,38,16
+    LTEXT           "Pix/Deg-Y:",IDC_PIX_PER_DEGY,487,402,39,17
+    EDITTEXT        IDC_PIX_PER_DEGX1,528,383,48,13,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_PIX_PER_DEGY1,528,401,50,12,ES_AUTOHSCROLL | ES_READONLY
+END
+
+IDD_FADINGEPARAMS DIALOG  0, 0, 181, 58
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Enter Experiment Parameters"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,120,12,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,120,33,50,14
+    LTEXT           "Low Gain",IDL_LOWGAIN,11,11,31,8
+    EDITTEXT        IDE_LOWGAIN,47,7,40,12,ES_CENTER | ES_AUTOHSCROLL
+    LTEXT           "High Gain",IDL_HIGHGAIN,11,27,32,8
+    EDITTEXT        IDE_HIGHGAIN,47,23,40,12,ES_CENTER | ES_AUTOHSCROLL
+    LTEXT           "Step Size",IDL_STEPSIZE,11,43,31,8
+    EDITTEXT        IDE_STEPSIZE,47,39,40,12,ES_CENTER | ES_AUTOHSCROLL
+    LTEXT           "<----",IDL_MESSAGE,92,8,23,9,NOT WS_VISIBLE
+    LTEXT           "<----",IDL_MESSAGE2,92,24,23,9,NOT WS_VISIBLE
+    LTEXT           "<----",IDL_MESSAGE3,92,40,23,8,NOT WS_VISIBLE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "ICANDI MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "ICANDI"
+            VALUE "LegalCopyright", "Copyright (C) 2006-2013"
+            VALUE "OriginalFilename", "ICANDI.EXE"
+            VALUE "ProductName", "ICANDI Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 323
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 75
+    END
+
+    IDD_DLG_PARAMS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 562
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 267
+    END
+
+    IDD_DLG_DESINUSOID, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 651
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 419
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// WAVE
+//
+
+IDW_SOUND               WAVE                    "breep.wav"
+IDW_DING                WAVE                    "ding.wav"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDR_MAINFRAME           "ICANDI\n\nICANDI\n\n\nICANDI.Document\nICANDI Document"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "ICANDI"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_NEW             "Create a new document\nNew"
+    ID_FILE_OPEN            "Open an existing document\nOpen"
+    ID_FILE_CLOSE           "Close the active document\nClose"
+    ID_FILE_SAVE            "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
+    ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
+    ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
+    ID_FILE_PRINT           "Print the active document\nPrint"
+    ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_MRU_FILE1       "Open this document"
+    ID_FILE_MRU_FILE2       "Open this document"
+    ID_FILE_MRU_FILE3       "Open this document"
+    ID_FILE_MRU_FILE4       "Open this document"
+    ID_FILE_MRU_FILE5       "Open this document"
+    ID_FILE_MRU_FILE6       "Open this document"
+    ID_FILE_MRU_FILE7       "Open this document"
+    ID_FILE_MRU_FILE8       "Open this document"
+    ID_FILE_MRU_FILE9       "Open this document"
+    ID_FILE_MRU_FILE10      "Open this document"
+    ID_FILE_MRU_FILE11      "Open this document"
+    ID_FILE_MRU_FILE12      "Open this document"
+    ID_FILE_MRU_FILE13      "Open this document"
+    ID_FILE_MRU_FILE14      "Open this document"
+    ID_FILE_MRU_FILE15      "Open this document"
+    ID_FILE_MRU_FILE16      "Open this document"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_EDIT_CLEAR           "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE 
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_STABLIZE_GO          "Start FFT Stablization\nGo FFT"
+    ID_STABLIZE_SUSPEND     "Stop FFT stablization\nStop"
+    ID_SETUP_DESINUSOID     "Desinusoiding of raw video\nDesinusoid"
+    ID_SETUP_PARAMS         "Edit ICANDI Parameters\nEdit"
+    ID_CAMERA_CONNECT       "Connect to camera\nConnect"
+    ID_CAMERA_DISCONNECT    "Disconnect from camera\nDisonnect"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_STABLIZE_LOAD_EXT_REF 
+                            "&Load external reference frame for Stabilization"
+    ID_SETUP_MOVIENORMALIZE "Averages & normalizes selected movie"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\ICANDI.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#include "afxprint.rc"       // printing/print preview resources
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,84 @@
+pcmcia_diag/ directory contents:
+
+This file describes the files provided in the pcmcia_diag/ directory.
+For detailed information regarding the pcmcia_diag application and for information
+on how to build and test the code, refer to the pcmcia_diag/readme.txt file.
+
+
+Source Files
+=============
+  - pcmcia_lib.c      
+        Implementation of a library for accessing PCI devices using
+        WinDriver's WDC API. The library's API is used by the user-mode 
+        application (pcmcia_diag).
+        
+  - pcmcia_lib.h
+        Header file for the pcmcia_lib library
+
+  - pcmcia_diag.c
+        Implementation of a sample diagnostics CUI application, which
+        demonstrates communication with a PCI device using the pcmcia_lib
+        and WDC libraries.
+        The sample also demonstrates how to communicate with a Kernel PlugIn 
+        driver from a user-mode WinDriver application.
+
+  - files.txt
+        Describes the sample files.
+
+
+Project/make and executable files
+=================================
+For Windows:
+------------
+  - x86/ directory - Windows x86 32-bit files:
+  
+    - msdev_6/ sub-directory:
+      - pcmcia_diag.dsp
+            MSDEV 6.0 project file
+      - pcmcia_diag.dsw
+            MSDEV 6.0 workspace file
+  
+    - msdev_2003/ sub-directory:
+      - pcmcia_diag.vcproj
+            MSDEV 2003 (.NET) project file
+      - pcmcia_diag.sln
+            MSDEV 2003 (.NET) solution file
+  
+    - msdev_2005/ sub-directory:
+      - pcmcia_diag.vcproj
+            MSDEV 2005 (.NET) project file
+      - pcmcia_diag.sln
+            MSDEV 2005 (.NET) solution file
+  
+    - cbuilder4/ sub-directory
+      (the files can also be used from Borland C++ Builder 5.0/6.0):
+      - pcmcia_diag.bpr
+            Borland C++ Builder 4.0 project file 
+      - pcmcia_diag.cpp
+            Borland C++ Builder 4.0 project files list
+
+    - cbuilder3/ sub-directory:
+      - pcmcia_diag.bpr
+            Borland C++ Builder 3.0 project file
+      - pcmcia_diag.cpp
+            Borland C++ Builder 3.0 project files list
+
+  - amd64/ directory - Windows x64 64-bit files:
+  
+    - msdev_2005/ sub-directory:
+      - pcmcia_diag.vcproj
+            MSDEV 2005 (.NET) project file
+      - pcmcia_diag.sln
+            MSDEV 2005 (.NET) solution file
+  
+  - WIN32/ sub-directory:
+    - pcmcia_diag.exe
+          The compiled sample program for Windows
+
+  For Windows 98/Me/2k/XP/Server 2003:
+  ------------------------------------
+  - pcmcia.inf
+         A sample WinDriver PCMCIA INF file.
+         NOTE: To use this file, change the vendor and device IDs in the file
+               to comply with those of your specific device.
+ 

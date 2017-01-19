@@ -1,0 +1,31 @@
+samples/ directory contents:
+----------------------------
+
+The samples/ directory contains the following files and sub-directories:
+
+-- The following sub-directories contain sample programs and source code
+   that demonstrates the use of WinDriver's API.
+   For a description of each sample and its files, see the relevant
+   <sample_dir>/files.txt and/or <sample_dir>/readme.txt files.
+
+  - basic_io/
+  - int_io/
+  - pci_diag/ 
+  - pci_dump/
+  - pci_scan/
+  - usb_diag/
+  - wddebug/
+  - wdreg/
+  - speaker/
+  - speaker_gui/
+  - cmos/
+  - i8253/
+
+-- shared/ sub-directory:
+        Contains files that declare and implement shared diagnostics APIs,
+        which are used by the sample applications and can also be used from
+        your own user-mode application.
+
+-- files.txt
+        Describes the sample files and directories.
+

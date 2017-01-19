@@ -1,0 +1,134 @@
+i8253
+
+This file contains:
+1. An overview of the i8253 sample.
+2. The contents of the i8253/ directory.
+3. Instructions for compiling the i8253 sample.
+
+
+1. Overview
+   =========
+   The Intel 8253/8254 programmable timer chip is a standard component on any
+   IBM PC motherboard. The chip provides 3 independent timers (referred to as
+   "channels") and a single control register.
+   
+   The i8253 sample sets the channel to 0 for maximum rate and then
+   continuously reads the timer values.
+
+
+2. Files
+   ======
+   - i8253.c
+         The main file, which implements the sample.
+
+   - files.txt
+         Describes the sample files.
+
+
+   For Windows:
+   ------------
+   - x86/ directory - Windows x86 32-bit files:
+     - msdev_6/ sub-directory:
+       - i8253.dsp
+             MSDEV 6.0 project file
+       - i8253.dsw
+             MSDEV 6.0 workspace file
+  
+     - msdev_2003/ sub-directory:
+       - i8253.vcproj
+             MSDEV 2003 (.NET) project file
+       - i8253.sln
+             MSDEV 2003 (.NET) solution file
+  
+     - msdev_2005/ sub-directory:
+      - i8253.vcproj
+            MSDEV 2005 (.NET) project file
+      - i8253.sln
+            MSDEV 2005 (.NET) solution file
+  
+     - cbuilder4/ sub-directory
+       (the files can also be used from Borland C++ Builder 5.0/6.0):
+       - i8253.bpr
+             Borland C++ Builder 4.0 project file 
+       - i8253.cpp
+             Borland C++ Builder 4.0 project files list
+
+     - cbuilder3/ sub-directory:
+       - i8253.bpr
+             Borland C++ Builder 3.0 project file
+       - i8253.cpp
+             Borland C++ Builder 3.0 project files list
+
+   - amd64/ directory - Windows x64 64-bit files:
+   
+     - msdev_2005/ sub-directory:
+       - i8253.vcproj
+             MSDEV 2005 (.NET) project file
+       - i8253.sln
+             MSDEV 2005 (.NET) solution file
+  
+   - WIN32/ sub-directory:
+     - i8253.exe
+           The compiled sample program for Windows
+
+   
+   For Windows CE:
+   ---------------
+   - msdevce/ sub-directory:
+     - i8253.dsp
+           MS eMbedded Visual C++ project file
+     - i8253.dsw
+           MS eMbedded Visual C++ workspace file
+          
+   - cepb/ sub-directory:
+         MS Platform Builder project file
+    
+   - 410_WCEARMV4Rel/ sub-directory
+     - i8253.exe
+           The compiled sample program for WinCE - ARM CPU
+      
+   - 410_WCEMIPSIIRel/ sub-directory
+     - i8253.exe
+           The compiled sample program for WinCE - MIPS CPU
+      
+   - 410_WCEX86Rel/ sub-directory
+     - i8253.exe
+           The compiled sample program for WinCE - x86 CPU
+
+
+   For Linux:
+   ----------
+   - LINUX/ sub-directory:
+     - makefile
+           GNU make makefile for building the project
+     - i8253
+           The compiled sample program for Linux
+
+
+3. Compiling the sample:
+   =====================
+   To compile and build the sample application you need an appropriate C/C++
+   compiler for your development platform.
+
+   - On Windows: If you are using one of the supported MSDEV or Borland C++
+     Builder IDEs (see above): open the sample project/workspace/solution
+     file from the relevant compiler sub-directory and simply build the project.
+    
+   - On Windows CE: If you are using MS eMbedded Visual C++ or MS Platform
+     Builder: open the sample project/workspace file from the relevant
+     compiler sub-directory (see above) and simply build the project.
+     
+     NOTES:
+     - To build the WinCE eMbedded Visual C++ project you need to have a
+       corresponding target SDK.
+     - To build the WinCE Platform Builder project you need to have a
+       corresponding BSP (Board Support Package) for the target platform.
+
+   - On Linux: If you are using GNU make, simply build the sample
+     using the makefile from the LINUX/.
+    
+   - If you are using a different C/C++ compiler or make utility:
+     - Create a new console mode project/makefile for your compiler.
+     - The project/makefile will refer to a single source file:
+       WinDriver/samples/i8253/i8253.c
+

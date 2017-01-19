@@ -1,0 +1,9 @@
+# The sources for the kernel plugin sample:
+TARGETNAME=kp_pci
+TARGETPATH=obj
+TARGETTYPE=DRIVER
+NO_SAFESEH=1
+USER_C_FLAGS=-DWINNT -D__KERNEL__ 
+INCLUDES=$(WD_BASEDIR)\include;$(WD_BASEDIR)
+TARGETLIBS=$(WD_BASEDIR)\lib\kp_nt920.lib $(WD_BASEDIR)\lib\kp_wdapi920.lib
+SOURCES=kp_pci.c ..\pci_lib.c kp_pci.rc

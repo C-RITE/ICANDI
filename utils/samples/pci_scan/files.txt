@@ -1,0 +1,175 @@
+PCI_SCAN
+
+This file contains:
+1. An overview of the pci_scan sample.
+2. The contents of the pci_scan/ directory.
+3. Instructions for compiling the pci_scan sample.
+4. Guidelines for converting pci_scan from a console-mode (CUI)
+   application to a graphical (GUI) application.
+
+
+1. Overview
+   =========
+   The pci_scan sample scans the PCI bus for the installed PCI cards and
+   displays the resources of the detected cards.
+
+
+2. Files
+   ======
+   This section describes the sub-directories and files provided under the
+   pci_scan/ directory.
+   
+   The source code was created by Jungo using WinDriver's API.
+
+   - pci_scan.c
+         The main file, which implements the sample.
+
+   - files.txt
+        Describes the sample files.
+
+
+   For Windows:
+   ------------
+   - x86/ directory - Windows x86 32-bit files:
+     - msdev_6/ sub-directory:
+       - pci_scan.dsp
+             MSDEV 6.0 project file
+       - pci_scan.dsw
+             MSDEV 6.0 workspace file
+  
+     - msdev_2003/ sub-directory:
+       - pci_scan.vcproj
+             MSDEV 2003 (.NET) project file
+       - pci_scan.sln
+             MSDEV 2003 (.NET) solution file
+  
+     - msdev_2005/ sub-directory:
+      - pci_scan.vcproj
+            MSDEV 2005 (.NET) project file
+      - pci_scan.sln
+            MSDEV 2005 (.NET) solution file
+  
+     - cbuilder4/ sub-directory
+       (the files can also be used from Borland C++ Builder 5.0/6.0):
+       - pci_scan.bpr
+             Borland C++ Builder 4.0 project file 
+       - pci_scan.cpp
+             Borland C++ Builder 4.0 project files list
+
+     - cbuilder3/ sub-directory:
+       - pci_scan.bpr
+             Borland C++ Builder 3.0 project file
+       - pci_scan.cpp
+             Borland C++ Builder 3.0 project files list
+
+   - amd64/ directory - Windows x64 64-bit files:
+   
+     - msdev_2005/ sub-directory:
+       - pci_scan.vcproj
+             MSDEV 2005 (.NET) project file
+       - pci_scan.sln
+             MSDEV 2005 (.NET) solution file
+  
+   - WIN32/ sub-directory:
+     - pci_scan.exe
+           The compiled sample program for Windows
+
+   
+   For Windows CE:
+   ---------------
+   - msdevce/ sub-directory:
+     - pci_scan.dsp
+           MS eMbedded Visual C++ project file
+     - pci_scan.dsw
+           MS eMbedded Visual C++ workspace file
+          
+   - cepb/ sub-directory:
+         MS Platform Builder project file
+    
+   - 410_WCEARMV4Rel/ sub-directory
+     - pci_scan.exe
+           The compiled sample program for WinCE - ARM CPU
+      
+   - 410_WCEMIPSIIRel/ sub-directory
+     - pci_scan.exe
+           The compiled sample program for WinCE - MIPS CPU
+      
+   - 410_WCEX86Rel/ sub-directory
+     - pci_scan.exe
+           The compiled sample program for WinCE - x86 CPU
+
+
+   For Linux:
+   ----------
+   - LINUX/ sub-directory:
+     - makefile
+           GNU make makefile for building the project
+     - pci_scan
+           The compiled sample program for Linux
+
+
+   For Solaris:
+   ------------
+   - SOLARIS/ sub-directory:
+     - makefile
+           GNU make makefile for building the sample
+     - pci_scan
+           The compiled sample program for Solaris
+
+
+3. Compiling the sample:
+   =====================
+   To compile and build the sample application you need an appropriate C/C++
+   compiler for your development platform.
+
+   - On Windows: If you are using one of the supported MSDEV or Borland C++
+     Builder IDEs (see above): open the sample project/workspace/solution
+     file from the relevant compiler sub-directory and simply build the project.
+    
+   - On Windows CE: If you are using MS eMbedded Visual C++ or MS Platform
+     Builder: open the sample project/workspace file from the relevant
+     compiler sub-directory (see above) and simply build the project.
+     
+     NOTES:
+     - To build the WinCE eMbedded Visual C++ project you need to have a
+       corresponding target SDK.
+     - To build the WinCE Platform Builder project you need to have a
+       corresponding BSP (Board Support Package) for the target platform.
+
+   - On Linux/Solaris: If you are using GNU make, simply build the sample
+     using the makefile from the LINUX/ or SOLARIS/ sub-directory
+     (respectively).
+    
+   - If you are using a different C/C++ compiler or make utility:
+     - Create a new console mode project/makefile for your compiler.
+     - Add the following files to the project/makefile:
+       WinDriver/samples/pci_scan/pci_scan.c
+       WinDriver/samples/shared/wdc_diag_lib.c
+       WinDriver/samples/shared/diag_lib.c
+     - Link your project with the WinDriver/lib/wdapi<version>.lib (Windows /
+       Windows CE) or WinDriver/lib/libwdapi<version>.so (Linux / Solaris) OR
+       add the following files (which are exported in the wdapi<version> DLL /
+       shared object) to your project/makefile:
+       WinDriver/src/wdapi/utils.c
+       WinDriver/src/wdapi/windrvr_int_thread.c
+       WinDriver/src/wdapi/windrvr_events.c
+       WinDriver/src/wdapi/status_strings.c
+       WinDriver/src/wdapi/wdc_general.c
+       WinDriver/src/wdapi/wdc_cfg.c
+       WinDriver/src/wdapi/wdc_mem_io.c
+       WinDriver/src/wdapi/wdc_ints.c
+       WinDriver/src/wdapi/wdc_events.c
+       WinDriver/src/wdapi/wdc_err.c
+       WinDriver/src/wdapi/wdc_dma.c
+     - Build your project.
+
+
+4. Converting to a GUI application:
+   ================================
+   This sample was written as a console mode application (rather than a GUI
+   application) that uses standard input and standard output.
+   This was done in order to simplify the source code. You can change the
+   sample into a GUI application by replacing all calls to <stdio.h> functions
+   such as printf(), sprintf(), scanf(), etc. with relevant GUI functions and
+   replacing the main() function in pci_scan.c with a GUI equivalent.
+
