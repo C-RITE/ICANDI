@@ -604,9 +604,9 @@ int CViewRawVideo::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// draw a label for Brightness
 	rect.left = 105;	rect.right  = rect.left + 115;
 	rect.top  = 512+110; rect.bottom = rect.top + 15;
-	m_lblBrightness.Create("Brightness - ",  WS_CHILD | WS_VISIBLE | SS_CENTER, 
+	m_lblBrightness.Create("Brightness : ",  WS_CHILD | WS_VISIBLE | SS_CENTER, 
 					 rect, this, IDL_BRIGHTNESS);
-	msg.Format("Brightness - %3d", 255-g_nBrightness);
+	msg.Format("Brightness : %3d", 255-g_nBrightness);
 	m_lblBrightness.SetWindowText(msg);
 
 	rect.left -= 20;	 rect.right  = rect.left + 155;
@@ -621,9 +621,9 @@ int CViewRawVideo::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// draw a label for contrast
 	rect.left = rect.right + 55;	rect.right  = rect.left + 115;
 	rect.top  = 512+110; rect.bottom = rect.top + 15;
-	m_lblContrast.Create("Contrast - ",  WS_CHILD | WS_VISIBLE | SS_CENTER, 
+	m_lblContrast.Create("Contrast : ",  WS_CHILD | WS_VISIBLE | SS_CENTER, 
 					 rect, this, IDL_CONTRAST);
-	msg.Format("Contrast - %3d", 127-g_nContrast);
+	msg.Format("Contrast : %3d", 127-g_nContrast);
 	m_lblContrast.SetWindowText(msg);
 
 	rect.left -= 20;	 rect.right  = rect.left + 155;
@@ -892,7 +892,7 @@ void CViewRawVideo::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		//send updated brightness to FPGA
 		UpdateBrightnessContrast(TRUE);
 
-		msg.Format("Brightness - %3d",nTemp1);
+		msg.Format("Brightness : %3d",nTemp1);
 		m_lblBrightness.SetWindowText(msg);
 		break;
 
@@ -901,7 +901,7 @@ void CViewRawVideo::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		//send updated brightness to FPGA
 		UpdateBrightnessContrast(FALSE);
 
-		msg.Format("Contrast - %3d",nTemp1);
+		msg.Format("Contrast : %3d",nTemp1);
 		m_lblContrast.SetWindowText(msg);
 		break;
 	}
