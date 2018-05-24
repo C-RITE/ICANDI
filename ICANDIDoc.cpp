@@ -53,9 +53,9 @@ PatchParams   g_PatchParamsA;		// parameters for handling matrox block-level sam
 PatchParams   g_PatchParamsB;		// parameters for handling matrox block-level sampling
 
 POINT         g_StimulusPos0Gain;		// stimulus position at gain 0, temporary added by Qiang
-POINT         g_StimulusPos;		// stimulus position on the stablized video
+POINT         g_StimulusPos;		// stimulus position on the stabilized video
 POINT         g_StimulusPos0G;
-POINT         g_StimulusPosBak;		// stimulus position on the stablized video
+POINT         g_StimulusPosBak;		// stimulus position on the stabilized video
 POINT	      g_nStimPos;
 POINT	      g_nStimPosBak_Matlab;
 POINT	      g_nStimPosBak_Matlab_Retreive; //05/04/2012
@@ -1435,7 +1435,7 @@ void DLLCALLCONV VIRTEX5_IntHandler(PVOID pData)
 //		aoslo_movie.FlashOnFlag = FALSE;
 
 		// at the end of each frame, and MSC running flag is turned on
-		// we need to do dewarping, and display stablized video, draw 
+		// we need to do dewarping, and display stabilized video, draw 
 		// stimulus point on raw video
 		if (g_bFFTIsRunning == TRUE && BlockID == g_BlockCounts) {
 			g_frameIndex ++;
@@ -3654,6 +3654,7 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 			}
 		break;
 		case WAIT_OBJECT_0+1: //Matlab message
+
 			msg = parent->m_strNetRecBuff[1];
 			ext = msg.Left(msg.GetLength()-(msg.GetLength()-msg.Find('#',0)));
 			msg = msg.Right(msg.GetLength()-msg.Find('#',0)-1);//remove the command part
@@ -4013,12 +4014,15 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 				break;
 			case 'V':
 				if (ext == "VPC") { //load prefix & create directory //12/15/2011
+					parent->GetSysTime(parent->m_VideoTimeStamp);
 					initials = msg.Left(msg.Find("\\",0)); //gives the prefix
 					g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_PREFIX, initials);			
 					CreateDirectory((g_ICANDIParams.VideoFolderPath+initials), NULL);
-					parent->m_VideoFolder = g_ICANDIParams.VideoFolderPath +msg;
+					parent->m_VideoFolder = g_ICANDIParams.VideoFolderPath + initials + "\\" + parent->m_VideoTimeStamp + parent->m_VideoFolderSuffix + "\\";
+					//parent->m_VideoFolder = g_ICANDIParams.VideoFolderPath + msg; // was before michen+wolf
 					CreateDirectory(parent->m_VideoFolder, NULL);
 					initials.Empty();
+					parent->m_nVideoNum = 0;
 				}
 				else if (ext == "VP") { //load prefix //12/15/2011				
 					g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_PREFIX, msg);					

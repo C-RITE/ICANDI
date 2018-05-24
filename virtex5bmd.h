@@ -17,14 +17,14 @@
 #define VIRTEX5_SPACE AD_PCI_BAR0
 
 #define  SYSTEM_LATENCY_DAC8  13	// system latency with 8-bit DAC, in # of data clocks
-#define  SYSTEM_LATENCY_DAC14 9		// system latency with 14-bit DAC, in # of data clocks
-#define  STIM_CHANNEL_IR      1
+#define  SYSTEM_LATENCY_DAC14 9		// system latency with 14-bit DAC, in # of data clocks,
+#define  STIM_CHANNEL_IR      1		//	.... DAC14 changed from 9 to X, 24.5.2017, WMH
 #define  STIM_CHANNEL_GR      2
 #define  STIM_CHANNEL_RD      3
 #define  STIM_CHANNEL_NU      4
-#define  AOM_LATENCYX_IR	  2
-#define  AOM_LATENCYX_RED	  12
-#define  AOM_LATENCYX_GR	  0
+#define  AOM_LATENCYX_IR	  13	//changed from 2 to 13, 24.5.2017, WMH
+#define  AOM_LATENCYX_RED	  8		//changed from 12 to 10, 09.06.2017, ND; from 10 to -3, 18.07.2017 ND; from -3 to 10, 02.02.2018 ND; from 10 to 8, 18.07.2017 ND;
+#define  AOM_LATENCYX_GR	  3		//changed from 0 to X, 24.5.2017, WMH; from 0 to -8, 18.07.2017 ND; from -8 to 5, 02.02.2018 ND; from 5 to 3, 18.07.2017 ND;
 
 enum {
     VIRTEX5_DSCR_OFFSET       = 0x0,

@@ -211,6 +211,7 @@ public:
 	BOOL	 m_bPlayback;
 	BOOL	 m_bExtCtrl;
 	short	m_nVideoNum;
+	CString m_VideoTimeStamp;
 	CString m_VideoFolder;
 	CString m_VideoFolderSuffix;
 
