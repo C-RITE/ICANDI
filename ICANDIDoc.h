@@ -160,6 +160,7 @@ private:
 	BOOL    m_bMilImageValid;
 	CSockListener	*m_ncListener_AO;
 	CSockListener	*m_ncListener_Matlab;
+	CSockListener	*m_ncListener_IGUIDE;
 
 	DWORD   thdid_handle[10];
 	HANDLE  thd_handle[10];

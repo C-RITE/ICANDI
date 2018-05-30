@@ -3574,85 +3574,85 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 	char command;
 	char seps[] = "\t", seps1[] = ","; //for parsing matlab sequence
 	BOOL bUpdate, bLoop, bTrigger;
-	
+
 	while(TRUE) {
-		switch(::WaitForMultipleObjects(2, parent->m_eNetMsg, FALSE, INFINITE)) {//Process the message
-		case WAIT_OBJECT_0: //AO message
-			msg = parent->m_strNetRecBuff[0];
-			command = msg[0];
-			msg = msg.Right(msg.GetLength()-1);
-			switch (command) {
-			case 'A': //disable 'Save Video'
-				break;
-			case 'S':
-				if (parent->m_bPlayback == TRUE)
-					parent->StopPlayback();
-			//	if (parent->m_bCameraConnected == TRUE)
-			//		parent->OnCameraDisconnect();				
-			//	parent->UpdateAllViews(NULL);
-				break;
-			case 'L':
-				if (parent->m_bPlayback == TRUE)
-					parent->StopPlayback();
-				if (parent->m_bCameraConnected == FALSE)
-					parent->OnCameraConnect();				
-//				parent->PostMessage(NULL);
-				break;
-			case 'Q': //process close msg
-				if (parent->m_bCameraConnected == TRUE)
-					parent->OnCameraDisconnect();
-			//	AfxGetMainWnd()->PostMessage(WM_CLOSE, 0, 0);
-				break;
-			case 'M': //process mark frame msg
-				break;
-			case 'C': //Create directory with new prefix				
-				initials = msg.Left(msg.Find("\\",0)); //gives the prefix
-				g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_PREFIX, initials);			
-				CreateDirectory((g_ICANDIParams.VideoFolderPath+initials), NULL);
-				parent->m_VideoFolder = g_ICANDIParams.VideoFolderPath +msg;
-				CreateDirectory(parent->m_VideoFolder, NULL);
-				initials.Empty();
-				break;
-			case 'G':
-				ind = msg.ReverseFind('\\');
-				g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_VIDEOLEN, msg.Right(msg.GetLength()-(ind+1)));
-				msg = msg.Left(msg.GetLength() - (msg.GetLength()-ind));
-				ind = msg.ReverseFind('\\');				
-				parent->m_videoFileName = msg.Right(msg.GetLength()-(ind+1));	
-				ind = parent->m_videoFileName.ReverseFind(_T('_V'));
-				parent->m_bExtCtrl = TRUE;
-				parent->m_nVideoNum = atoi(parent->m_videoFileName.Right(parent->m_videoFileName.GetLength()-(ind+2)));
-				g_viewMsgVideo->PostMessage(WM_MOVIE_SEND, 0, SAVE_VIDEO_FLAG);
-				break;
-			case 'P':
-				msg = g_ICANDIParams.VideoFolderPath + msg;
-				g_viewMsgVideo->SetDlgItemText(IDL_VIDEO_FILENAME, msg);
-				parent->PlaybackMovie(LPCTSTR(msg));
-				break;
-			case 'D':				
-				//write_ScreenText(m_CFtxtfont2,m_CRDefocusValue,text,RGB(255,255,0));
-				break;
-			case 'F':
-				if (parent->m_bPlayback == TRUE)
-					g_AnimateCtrl->Seek(atoi(msg));
-				break;
-			case 'U': //start stabilization
-				if (parent->m_bPlayback == TRUE)
-					parent->StopPlayback();
-				if (parent->m_bCameraConnected == FALSE)
-					parent->OnCameraConnect();	
-				g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0, STABILIZATION_GO);
-				break;
-			case 'O': //stop stabilization
-				parent->OnStablizeSuspend();
-				break;
-			case 'E': //reset reference frame
-				g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0, STABILIZATION_GO);
-				break;
-			default:
-				break;
-			}
-		break;
+		switch(::WaitForMultipleObjects(3, parent->m_eNetMsg, FALSE, INFINITE)) {//Process the message
+			case WAIT_OBJECT_0: //AO message
+				msg = parent->m_strNetRecBuff[0];
+				command = msg[0];
+				msg = msg.Right(msg.GetLength()-1);
+				switch (command) {
+					case 'A': //disable 'Save Video'
+						break;
+					case 'S':
+						if (parent->m_bPlayback == TRUE)
+							parent->StopPlayback();
+						//	if (parent->m_bCameraConnected == TRUE)
+						//		parent->OnCameraDisconnect();				
+						//	parent->UpdateAllViews(NULL);
+						break;
+					case 'L':
+						if (parent->m_bPlayback == TRUE)
+							parent->StopPlayback();
+						if (parent->m_bCameraConnected == FALSE)
+							parent->OnCameraConnect();				
+						//				parent->PostMessage(NULL);
+						break;
+					case 'Q': //process close msg
+						if (parent->m_bCameraConnected == TRUE)
+							parent->OnCameraDisconnect();
+						//	AfxGetMainWnd()->PostMessage(WM_CLOSE, 0, 0);
+						break;
+					case 'M': //process mark frame msg
+						break;
+					case 'C': //Create directory with new prefix				
+						initials = msg.Left(msg.Find("\\",0)); //gives the prefix
+						g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_PREFIX, initials);			
+						CreateDirectory((g_ICANDIParams.VideoFolderPath+initials), NULL);
+						parent->m_VideoFolder = g_ICANDIParams.VideoFolderPath +msg;
+						CreateDirectory(parent->m_VideoFolder, NULL);
+						initials.Empty();
+						break;
+					case 'G':
+						ind = msg.ReverseFind('\\');
+						g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_VIDEOLEN, msg.Right(msg.GetLength()-(ind+1)));
+						msg = msg.Left(msg.GetLength() - (msg.GetLength()-ind));
+						ind = msg.ReverseFind('\\');				
+						parent->m_videoFileName = msg.Right(msg.GetLength()-(ind+1));	
+						ind = parent->m_videoFileName.ReverseFind(_T('_V'));
+						parent->m_bExtCtrl = TRUE;
+						parent->m_nVideoNum = atoi(parent->m_videoFileName.Right(parent->m_videoFileName.GetLength()-(ind+2)));
+						g_viewMsgVideo->PostMessage(WM_MOVIE_SEND, 0, SAVE_VIDEO_FLAG);
+						break;
+					case 'P':
+						msg = g_ICANDIParams.VideoFolderPath + msg;
+						g_viewMsgVideo->SetDlgItemText(IDL_VIDEO_FILENAME, msg);
+						parent->PlaybackMovie(LPCTSTR(msg));
+						break;
+					case 'D':				
+						//write_ScreenText(m_CFtxtfont2,m_CRDefocusValue,text,RGB(255,255,0));
+						break;
+					case 'F':
+						if (parent->m_bPlayback == TRUE)
+							g_AnimateCtrl->Seek(atoi(msg));
+						break;
+					case 'U': //start stabilization
+						if (parent->m_bPlayback == TRUE)
+							parent->StopPlayback();
+						if (parent->m_bCameraConnected == FALSE)
+							parent->OnCameraConnect();	
+						g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0, STABILIZATION_GO);
+						break;
+					case 'O': //stop stabilization
+						parent->OnStablizeSuspend();
+						break;
+					case 'E': //reset reference frame
+						g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0, STABILIZATION_GO);
+						break;
+					default:
+						break;
+				}
+
 		case WAIT_OBJECT_0+1: //Matlab message
 
 			msg = parent->m_strNetRecBuff[1];
@@ -3662,76 +3662,76 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 				if (msg[msg.GetLength()-1] == '#')//if command ended with delimtier'#' delete it
 					msg.Delete(msg.GetLength()-1);			
 			switch(ext[0])
-			{
-			case 'F': //fix the current tracking location or the center of the stabilized frame for the rest of the experiment run
-				g_nStimPosBak_Matlab.x = g_StimulusPosBak.x;//aoslo_movie.dewarp_sx/2;
-				g_nStimPosBak_Matlab.y = g_StimulusPosBak.y;//aoslo_movie.dewarp_sy/2;
-				break;	
-			case 'G': //start saving video and trigger sequence	
-				if (ext == "Gain") {
-					fGain = atof(msg.Left(msg.Find('#')));
-					aoslo_movie.fStabGainStim = fGain;
-					initials.Format("%3.2f", aoslo_movie.fStabGainStim);				
-					g_viewMsgVideo->SetDlgItemText(ID_STIM_GAIN_VALUE_LBL, initials);
-					fGain = -1.;
-				}
-				else if (ext == "Gain0Tracking") {
-					g_bGain0Tracking = (atoi(msg)) == 1? TRUE:FALSE;
-					wnd = (CButton*)g_viewMsgVideo->GetDlgItem(ID_BUTTON_GAIN0_TRACK);
-					wnd->SetCheck(g_bGain0Tracking);
-				}
-				else if (ext == "GRVIDT") { //12/15/2011
-					if (strcmp(msg, "-") != 0) {
+				{
+				case 'F': //fix the current tracking location or the center of the stabilized frame for the rest of the experiment run
+					g_nStimPosBak_Matlab.x = g_StimulusPosBak.x;//aoslo_movie.dewarp_sx/2;
+					g_nStimPosBak_Matlab.y = g_StimulusPosBak.y;//aoslo_movie.dewarp_sy/2;
+					break;	
+				case 'G': //start saving video and trigger sequence	
+					if (ext == "Gain") {
+						fGain = atof(msg.Left(msg.Find('#')));
+						aoslo_movie.fStabGainStim = fGain;
+						initials.Format("%3.2f", aoslo_movie.fStabGainStim);				
+						g_viewMsgVideo->SetDlgItemText(ID_STIM_GAIN_VALUE_LBL, initials);
+						fGain = -1.;
+					}
+					else if (ext == "Gain0Tracking") {
+						g_bGain0Tracking = (atoi(msg)) == 1? TRUE:FALSE;
+						wnd = (CButton*)g_viewMsgVideo->GetDlgItem(ID_BUTTON_GAIN0_TRACK);
+						wnd->SetCheck(g_bGain0Tracking);
+					}
+					else if (ext == "GRVIDT") { //12/15/2011
+						if (strcmp(msg, "-") != 0) {
+							g_bMatlab_Update = FALSE;
+							g_bMatlab_Loop?g_bMatlab_Loop=FALSE:0;
+							g_bMatlab_Trigger = TRUE;
+							g_nCurFlashCount = 0;
+							parent->m_videoFileName = msg;
+							parent->m_bExtCtrl = TRUE;
+							g_bMatlabCtrl = TRUE;
+							g_viewMsgVideo->PostMessage(WM_MOVIE_SEND, 0, SAVE_VIDEO_FLAG);
+						}
+						else { //command called by avi file mode to save video						
+							g_nCurFlashCount = 0;
+							g_bMatlabAVIsavevideo = TRUE;
+						}
+					}
+					break;
+				case 'L': //ignore first 3 parameters in this command and load stimuli								
+					if (ext == "Load") {
+						//	g_nStimPosBak_Matlab.x = g_StimulusPosBak.x;
+						//	g_nStimPosBak_Matlab.y = g_StimulusPosBak.y;	
+						g_bMatlabCtrl = FALSE;
 						g_bMatlab_Update = FALSE;
-						g_bMatlab_Loop?g_bMatlab_Loop=FALSE:0;
-						g_bMatlab_Trigger = TRUE;
-						g_nCurFlashCount = 0;
-						parent->m_videoFileName = msg;
-						parent->m_bExtCtrl = TRUE;
-						g_bMatlabCtrl = TRUE;
-						g_viewMsgVideo->PostMessage(WM_MOVIE_SEND, 0, SAVE_VIDEO_FLAG);
+						g_bMatlab_Trigger = FALSE;
+						parent->Load_Default_Stimulus(true);
+						aoslo_movie.WriteMarkFlag = FALSE;
+						ext = msg.Right(3);//get stimuli file extension
+						ext = '.'+ext;
+						msg.Delete(msg.GetLength()-4, 4);
+						ind = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));//get the ending count of stimuli
+						msg = msg.Left(msg.GetLength()-(msg.GetLength()-msg.ReverseFind('#')));				
+						i = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));//get the starting count number of stimuli
+						msg = msg.Left(msg.GetLength()-(msg.GetLength()-msg.ReverseFind('#')));
+						initials = msg.Right(msg.GetLength()-msg.ReverseFind('#')-1);//get the prefix of stimuli
+						msg = msg.Left(msg.GetLength()-(msg.GetLength()-msg.ReverseFind('#')));				
+						folder = msg.Right(msg.GetLength()-msg.ReverseFind('#')-1);//get the folder location of stimuli					
+						msg = msg.Left(msg.GetLength()-(msg.GetLength()-msg.ReverseFind('#')));	
+						len = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));
+						if (parent->LoadMultiStimuli_Matlab(len, folder, initials, i, ind, ext) == TRUE)//load into application buffers
+							;//g_bMatlabCtrl = TRUE;//indicate application that matlab control is initiated
 					}
-					else { //command called by avi file mode to save video						
-						g_nCurFlashCount = 0;
-						g_bMatlabAVIsavevideo = TRUE;
+					else if (ext == "Loop") {
+						g_bMatlab_Loop = atoi(msg);
 					}
-				}
-				break;
-			case 'L': //ignore first 3 parameters in this command and load stimuli								
-				if (ext == "Load") {
-				//	g_nStimPosBak_Matlab.x = g_StimulusPosBak.x;
-				//	g_nStimPosBak_Matlab.y = g_StimulusPosBak.y;	
-					g_bMatlabCtrl = FALSE;
-					g_bMatlab_Update = FALSE;
-					g_bMatlab_Trigger = FALSE;
-					parent->Load_Default_Stimulus(true);
-					aoslo_movie.WriteMarkFlag = FALSE;
-					ext = msg.Right(3);//get stimuli file extension
-					ext = '.'+ext;
-					msg.Delete(msg.GetLength()-4, 4);
-					ind = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));//get the ending count of stimuli
-					msg = msg.Left(msg.GetLength()-(msg.GetLength()-msg.ReverseFind('#')));				
-					i = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));//get the starting count number of stimuli
-					msg = msg.Left(msg.GetLength()-(msg.GetLength()-msg.ReverseFind('#')));
-					initials = msg.Right(msg.GetLength()-msg.ReverseFind('#')-1);//get the prefix of stimuli
-					msg = msg.Left(msg.GetLength()-(msg.GetLength()-msg.ReverseFind('#')));				
-					folder = msg.Right(msg.GetLength()-msg.ReverseFind('#')-1);//get the folder location of stimuli					
-					msg = msg.Left(msg.GetLength()-(msg.GetLength()-msg.ReverseFind('#')));	
-					len = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));
-					if (parent->LoadMultiStimuli_Matlab(len, folder, initials, i, ind, ext) == TRUE)//load into application buffers
-						;//g_bMatlabCtrl = TRUE;//indicate application that matlab control is initiated
-				}
-				else if (ext == "Loop") {
-					g_bMatlab_Loop = atoi(msg);
-				}
-				else if (ext == "LL") { //12/15/2011
-					len = atoi(msg); //could be -1 or an integer
-					g_nFlashCount = len; //-1 = infinite
-					g_nCurFlashCount = 0;
-				}
-				else if (ext == "Locate") { //update stimulus position
-					ind = atoi(msg.Left(msg.Find('#')));
-					i = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));
+					else if (ext == "LL") { //12/15/2011
+						len = atoi(msg); //could be -1 or an integer
+						g_nFlashCount = len; //-1 = infinite
+						g_nCurFlashCount = 0;
+					}
+					else if (ext == "Locate") { //update stimulus position
+						ind = atoi(msg.Left(msg.Find('#')));
+						i = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));
 						g_nStimPos.x = aoslo_movie.dewarp_sx - g_nStimPosBak_Matlab.y -1+ ind;//g_nStimPosBak_Matlab.x + atoi(msg.Left(msg.Find('#'))); //X location
 						g_nStimPos.y = g_nStimPosBak_Matlab.x + i;// + atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1)); //Y location
 						g_viewDewVideo->SendMessage(WM_MOVIE_SEND, 0, UPDATE_STIM_POS_MATLAB);
@@ -3741,263 +3741,263 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 							parent->m_cpOldLoc.x = parent->m_cpOldLoc_bk.x+ind;
 							parent->m_cpOldLoc.y = parent->m_cpOldLoc_bk.y+i;
 						}
-				}
-				else if (ext == "LocUser") { //update stimulus location with user defined values
-					ind = atoi(msg.Left(msg.Find('#')));
-					i = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));
-					dewarp_sx = (aoslo_movie.dewarp_sx - aoslo_movie.width) / 2;
-					dewarp_sy = (aoslo_movie.dewarp_sy - aoslo_movie.height) / 2;
-					g_nStimPos.x = ind + dewarp_sy -1;//g_nStimPosBak_Matlab.x + atoi(msg.Left(msg.Find('#'))); //X location
-					g_nStimPos.y = i + dewarp_sx -1;// + atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1)); //Y location
-					g_viewDewVideo->SendMessage(WM_MOVIE_SEND, 0, UPDATE_STIM_POS_MATLAB);
-				}
-				else if (ext == "LoadDefaults") { //load default stimulus
-					ind = atoi(msg);
-					parent->Load_Default_Stimulus(ind);
-				}
-				break;
-			case 'M': //process mark frame msg 02/24/2012 new
-				if (ext == "MarkFrame")
-					g_bWritePsyStimulus = TRUE;
-				break;
-			case 'R':
-				if (ext == "RunSLR" && g_bRunSLR) {
-					if (parent->m_cpOldLoc_bk.x != parent->m_cpOldLoc.x || parent->m_cpOldLoc_bk.y != parent->m_cpOldLoc.y) {
-						parent->m_cpOldLoc.x = parent->m_cpOldLoc_bk.x;
-						parent->m_cpOldLoc.y = parent->m_cpOldLoc_bk.y;
 					}
-					PulseEvent(g_eRunSLR);
-				}
-				else if (ext == "Retrieve" && g_bFFTIsRunning == TRUE) {
-					len = atoi(msg);
-					if (len == 1 && g_nStimPosBak_Matlab_Retreive.x != -1) {
-						g_nStimPos.x = g_nStimPosBak_Matlab_Retreive.x;
-						g_nStimPos.y = g_nStimPosBak_Matlab_Retreive.y;
-						g_viewDewVideo->SendMessage(WM_MOVIE_SEND, 0, UPDATE_STIM_POS);
+					else if (ext == "LocUser") { //update stimulus location with user defined values
+						ind = atoi(msg.Left(msg.Find('#')));
+						i = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));
+						dewarp_sx = (aoslo_movie.dewarp_sx - aoslo_movie.width) / 2;
+						dewarp_sy = (aoslo_movie.dewarp_sy - aoslo_movie.height) / 2;
+						g_nStimPos.x = ind + dewarp_sy -1;//g_nStimPosBak_Matlab.x + atoi(msg.Left(msg.Find('#'))); //X location
+						g_nStimPos.y = i + dewarp_sx -1;// + atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1)); //Y location
+						g_viewDewVideo->SendMessage(WM_MOVIE_SEND, 0, UPDATE_STIM_POS_MATLAB);
 					}
-					else if (len == 0 && g_StimulusPos.x != -1) {
-						g_nStimPosBak_Matlab_Retreive.x = aoslo_movie.dewarp_sy-g_StimulusPos.y-1;
-						g_nStimPosBak_Matlab_Retreive.y = g_StimulusPos.x;
+					else if (ext == "LoadDefaults") { //load default stimulus
+						ind = atoi(msg);
+						parent->Load_Default_Stimulus(ind);
 					}
-				}
-				break;
-			case 'S': //load sequence g_nSequence_Matlab
-				if (ext == "Sequence") {
-					bUpdate = g_bMatlab_Update;
-					bLoop = g_bMatlab_Loop;
-					bTrigger = g_bMatlab_Trigger;
-					g_bMatlab_Loop = FALSE;
-					g_bMatlab_Trigger = FALSE;				
-					g_bMatlab_Update = FALSE;
-					g_nFlashCount = 0;
-					g_nFlashCount = atoi(msg);
-					//read the sequence file and parse it
-					MATFile *pmat;
-					const char* name=NULL;
-					mxArray *pa;
-					double* in;	
-					
-					pmat = matOpen("G:\\Seqfile.mat", "r");
-					if (pmat == NULL) 
-						break;
-
-					pa = matGetNextVariable(pmat, &name);
-					while (pa!=NULL)
-					{
-						in = mxGetPr(pa);
-						if (!strcmp(name, "aom0seq")) {
-							VD_trunctoUS(g_nSequence_Matlab[0], in, g_nFlashCount);
+					break;
+				case 'M': //process mark frame msg 02/24/2012 new
+					if (ext == "MarkFrame")
+						g_bWritePsyStimulus = TRUE;
+					break;
+				case 'R':
+					if (ext == "RunSLR" && g_bRunSLR) {
+						if (parent->m_cpOldLoc_bk.x != parent->m_cpOldLoc.x || parent->m_cpOldLoc_bk.y != parent->m_cpOldLoc.y) {
+							parent->m_cpOldLoc.x = parent->m_cpOldLoc_bk.x;
+							parent->m_cpOldLoc.y = parent->m_cpOldLoc_bk.y;
 						}
-						else if (!strcmp(name, "aom0pow")) {
-							VD_mulC(in, in, g_nFlashCount, 100.);
-							VD_trunctoUS(g_nIRPower_Matlab, in, g_nFlashCount);
-						}
-						else if (!strcmp(name, "aom0locx")) {
-							switch (g_ICANDIParams.FRAME_ROTATION)	{
-								case 0: //no rotation or flip
-									VD_trunctoSI(g_nLocX[0], in, g_nFlashCount);
-									break;
-								case 1: //rotate 90 deg
-									VD_trunctoSI(g_nLocY[0], in, g_nFlashCount);
-									break;
-								case 2: //flip along Y axis
-									VD_trunctoSI(g_nLocX[0], in, g_nFlashCount);
-									break;
-								default: ;
-							}
-						//	VD_trunctoSI(g_nLocX[0], in, g_nFlashCount);
-						//	VSI_mulC(g_nLocX[0], g_nLocX[0], g_nFlashCount, -1); // for image rotation
-						}
-						else if (!strcmp(name, "aom0locy")) {
-							switch (g_ICANDIParams.FRAME_ROTATION)	{
-								case 0: //no rotation or flip
-									VD_trunctoSI(g_nLocY[0], in, g_nFlashCount);
-									break;
-								case 1: //rotate 90 deg
-									VD_trunctoSI(g_nLocX[0], in, g_nFlashCount);
-									break;
-								case 2: //flip along Y axis
-									VD_trunctoSI(g_nLocY[0], in, g_nFlashCount);
-									VSI_mulC(g_nLocY[0], g_nLocY[0], g_nFlashCount, -1);
-									break;
-								default: ;
-							}
-						//	VD_trunctoSI(g_nLocY[0], in, g_nFlashCount);
-						}
-						else if (!strcmp(name, "aom1seq")) {
-							VD_trunctoUS(g_nSequence_Matlab[1], in, g_nFlashCount);
-						}
-						else if (!strcmp(name, "aom1pow")) {
-							VD_mulC(in, in, g_nFlashCount, 1000.);
-							VD_trunctoUS(g_nRedPower_Matlab, in, g_nFlashCount);
-						}
-						else if (!strcmp(name, "aom1offx")) {
-							switch (g_ICANDIParams.FRAME_ROTATION)	{
-								case 0: //no rotation or flip
-									VD_trunctoSI(g_nLocX[1], in, g_nFlashCount);
-									break;
-								case 2: //flip along Y axis
-									VD_trunctoSI(g_nLocX[1], in, g_nFlashCount);
-									VSI_mulC(g_nLocX[1], g_nLocX[1], g_nFlashCount, -1);
-									break;
-								default: ;
-							}
-						//	VD_trunctoSI(g_nLocX[1], in, g_nFlashCount);
-						//	VSI_mulC(g_nLocX[1], g_nLocX[1], g_nFlashCount, -1);
-							VSI_limit( g_nLocX[1], g_nLocX[1], g_nFlashCount, -64, 64 );
-						}
-						else if (!strcmp(name, "aom1offy")) {
-							switch (g_ICANDIParams.FRAME_ROTATION)	{
-								case 0: //no rotation or flip
-								case 2:
-									VD_trunctoSI(g_nLocY[1], in, g_nFlashCount);
-									break;
-								case 1: //flip along X axis
-									VD_trunctoSI(g_nLocY[1], in, g_nFlashCount);
-									VSI_mulC(g_nLocY[1], g_nLocY[1], g_nFlashCount, -1);
-									break;
-								default: ;
-							}
-						//	VD_trunctoSI(g_nLocY[1], in, g_nFlashCount);
-							VSI_limit( g_nLocY[1], g_nLocY[1], g_nFlashCount, -64, 64 );
-						}
-						else if (!strcmp(name, "aom2seq")) {
-							VD_trunctoUS(g_nSequence_Matlab[2], in, g_nFlashCount);
-						}
-						else if (!strcmp(name, "aom2pow")) {
-							VD_mulC(in, in, g_nFlashCount, 1000.);
-							VD_trunctoUS(g_nGreenPower_Matlab, in, g_nFlashCount);
-						}
-						else if (!strcmp(name, "aom2offx")) {
-							VD_trunctoSI(g_nLocX[2], in, g_nFlashCount);
-						//	VSI_mulC(g_nLocX[2], g_nLocX[2], g_nFlashCount, -1);
-							VSI_limit( g_nLocX[2], g_nLocX[2], g_nFlashCount, -32, 32 );
-						}
-						else if (!strcmp(name, "aom2offy")) {
-							VD_trunctoSI(g_nLocY[2], in, g_nFlashCount);
-							VSI_limit( g_nLocY[2], g_nLocY[2], g_nFlashCount, -32, 32 );
-						}
-						else if (!strcmp(name, "gainseq")) {
-							V_DtoF( g_fGain_Matlab, in, g_nFlashCount);
-						}
-						else if (!strcmp(name, "angleseq")) {
-							VD_trunctoUB( g_ubAngle_Matlab, in, g_nFlashCount);
-						}
-						else if (!strcmp(name, "stimbeep")) {
-							VD_trunctoUB( g_ubStimPresFlg_Matlab, in, g_nFlashCount);
-						}
-						//get next variable
-						pa = matGetNextVariable(pmat,&name);					
+						PulseEvent(g_eRunSLR);
 					}
-					//destroy allocated matrix
-					mxDestroyArray(pa);
-					matClose(pmat);
-					
-					g_nCurFlashCount = 0; //Set the sequence position to '0'
-					g_bMatlab_Loop = bLoop;
-					g_bMatlab_Trigger = bTrigger;
-					g_bMatlab_Update = bUpdate;
-				}
-				else if (ext == "StimulusOn") {
-					g_bStimulusOn = (atoi(msg)) == 1? TRUE:FALSE;					
-				}
-				break;
-			case 'T'://terminate matlab
-				if (ext == "TurnOn") {
-					ind = atoi(msg.Left(msg.Find('#'))); //which channel
-					i = atoi(msg.Right(msg.GetLength()-msg.Find('#')-1));
-					if (ind == 0) {//IR						
-						aoslo_movie.bIRAomOn = i; 
+					else if (ext == "Retrieve" && g_bFFTIsRunning == TRUE) {
+						len = atoi(msg);
+						if (len == 1 && g_nStimPosBak_Matlab_Retreive.x != -1) {
+							g_nStimPos.x = g_nStimPosBak_Matlab_Retreive.x;
+							g_nStimPos.y = g_nStimPosBak_Matlab_Retreive.y;
+							g_viewDewVideo->SendMessage(WM_MOVIE_SEND, 0, UPDATE_STIM_POS);
+						}
+						else if (len == 0 && g_StimulusPos.x != -1) {
+							g_nStimPosBak_Matlab_Retreive.x = aoslo_movie.dewarp_sy-g_StimulusPos.y-1;
+							g_nStimPosBak_Matlab_Retreive.y = g_StimulusPos.x;
+						}
 					}
-					else if (ind == 1) { //Red
-						aoslo_movie.bRedAomOn = i;
-					}
-					else if (ind == 2) { //Green
-						aoslo_movie.bGrAomOn = i;
-					}
-					g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0, UPDATE_AOMS_STATE);
-				}
-				else if (ext == "Trigger") { //12/15/2011
-					g_nCurFlashCount = 0;
-					if (msg == "AVI") 
-						g_bMatlabAVIsavevideo = FALSE;
-					else {
-						g_bMatlab_Trigger = TRUE;
-						g_bMatlab_Update = TRUE;					
-					}
-				}
-				else {
-					g_bMatlabCtrl = FALSE;
-					g_bMatlab_Loop = FALSE;
-					g_bMatlab_Update = FALSE;
-					g_bMatlab_Trigger = FALSE;
-					g_bStimulusOn = TRUE;
-				}
-				break;
-			case 'U': //ignore the first parameter and update the active stimuli number #IRGB#
-				if (ext == "Update") {
-					ind = atoi(msg.Left(msg.Find('#'))); //IR
-					msg = msg.Right(msg.GetLength()-msg.Find('#')-1);
-					i = atoi(msg.Left(msg.Find('#'))); //Red
-					msg = msg.Right(msg.GetLength()-msg.Find('#')-1);
-					len = atoi(msg.Left(msg.Find('#'))); //Green
-					if (aoslo_movie.stimuli_num > ind && aoslo_movie.stimuli_num > i && aoslo_movie.stimuli_num > len && !g_bMatlabVideo) {
-						if (ind == -1)
-							g_nSequence_Matlab[0][0] = aoslo_movie.stimuli_num-1;
-						else if (ind > -1)
-							g_nSequence_Matlab[0][0] = ind;
-						if (i == -1)
-							g_nSequence_Matlab[1][0] = aoslo_movie.stimuli_num-1;
-						else if (i > -1)
-							g_nSequence_Matlab[1][0] = i;
-						if (len == -1)
-							g_nSequence_Matlab[2][0] = aoslo_movie.stimuli_num-1;
-						else if (len > -1)
-							g_nSequence_Matlab[2][0] = len;
-						g_sMatlab_Update_Ind[0] = g_sMatlab_Update_Ind[1] = g_sMatlab_Update_Ind[2] = 0;
+					break;
+				case 'S': //load sequence g_nSequence_Matlab
+					if (ext == "Sequence") {
+						bUpdate = g_bMatlab_Update;
+						bLoop = g_bMatlab_Loop;
+						bTrigger = g_bMatlab_Trigger;
 						g_bMatlab_Loop = FALSE;
+						g_bMatlab_Trigger = FALSE;				
+						g_bMatlab_Update = FALSE;
+						g_nFlashCount = 0;
+						g_nFlashCount = atoi(msg);
+						//read the sequence file and parse it
+						MATFile *pmat;
+						const char* name=NULL;
+						mxArray *pa;
+						double* in;	
+
+						pmat = matOpen("G:\\Seqfile.mat", "r");
+						if (pmat == NULL) 
+							break;
+
+						pa = matGetNextVariable(pmat, &name);
+						while (pa!=NULL)
+						{
+							in = mxGetPr(pa);
+							if (!strcmp(name, "aom0seq")) {
+								VD_trunctoUS(g_nSequence_Matlab[0], in, g_nFlashCount);
+							}
+							else if (!strcmp(name, "aom0pow")) {
+								VD_mulC(in, in, g_nFlashCount, 100.);
+								VD_trunctoUS(g_nIRPower_Matlab, in, g_nFlashCount);
+							}
+							else if (!strcmp(name, "aom0locx")) {
+								switch (g_ICANDIParams.FRAME_ROTATION)	{
+										case 0: //no rotation or flip
+											VD_trunctoSI(g_nLocX[0], in, g_nFlashCount);
+											break;
+										case 1: //rotate 90 deg
+											VD_trunctoSI(g_nLocY[0], in, g_nFlashCount);
+											break;
+										case 2: //flip along Y axis
+											VD_trunctoSI(g_nLocX[0], in, g_nFlashCount);
+											break;
+										default: ;
+								}
+								//	VD_trunctoSI(g_nLocX[0], in, g_nFlashCount);
+								//	VSI_mulC(g_nLocX[0], g_nLocX[0], g_nFlashCount, -1); // for image rotation
+							}
+							else if (!strcmp(name, "aom0locy")) {
+								switch (g_ICANDIParams.FRAME_ROTATION)	{
+										case 0: //no rotation or flip
+											VD_trunctoSI(g_nLocY[0], in, g_nFlashCount);
+											break;
+										case 1: //rotate 90 deg
+											VD_trunctoSI(g_nLocX[0], in, g_nFlashCount);
+											break;
+										case 2: //flip along Y axis
+											VD_trunctoSI(g_nLocY[0], in, g_nFlashCount);
+											VSI_mulC(g_nLocY[0], g_nLocY[0], g_nFlashCount, -1);
+											break;
+										default: ;
+								}
+								//	VD_trunctoSI(g_nLocY[0], in, g_nFlashCount);
+							}
+							else if (!strcmp(name, "aom1seq")) {
+								VD_trunctoUS(g_nSequence_Matlab[1], in, g_nFlashCount);
+							}
+							else if (!strcmp(name, "aom1pow")) {
+								VD_mulC(in, in, g_nFlashCount, 1000.);
+								VD_trunctoUS(g_nRedPower_Matlab, in, g_nFlashCount);
+							}
+							else if (!strcmp(name, "aom1offx")) {
+								switch (g_ICANDIParams.FRAME_ROTATION)	{
+										case 0: //no rotation or flip
+											VD_trunctoSI(g_nLocX[1], in, g_nFlashCount);
+											break;
+										case 2: //flip along Y axis
+											VD_trunctoSI(g_nLocX[1], in, g_nFlashCount);
+											VSI_mulC(g_nLocX[1], g_nLocX[1], g_nFlashCount, -1);
+											break;
+										default: ;
+								}
+								//	VD_trunctoSI(g_nLocX[1], in, g_nFlashCount);
+								//	VSI_mulC(g_nLocX[1], g_nLocX[1], g_nFlashCount, -1);
+								VSI_limit( g_nLocX[1], g_nLocX[1], g_nFlashCount, -64, 64 );
+							}
+							else if (!strcmp(name, "aom1offy")) {
+								switch (g_ICANDIParams.FRAME_ROTATION)	{
+										case 0: //no rotation or flip
+										case 2:
+											VD_trunctoSI(g_nLocY[1], in, g_nFlashCount);
+											break;
+										case 1: //flip along X axis
+											VD_trunctoSI(g_nLocY[1], in, g_nFlashCount);
+											VSI_mulC(g_nLocY[1], g_nLocY[1], g_nFlashCount, -1);
+											break;
+										default: ;
+								}
+								//	VD_trunctoSI(g_nLocY[1], in, g_nFlashCount);
+								VSI_limit( g_nLocY[1], g_nLocY[1], g_nFlashCount, -64, 64 );
+							}
+							else if (!strcmp(name, "aom2seq")) {
+								VD_trunctoUS(g_nSequence_Matlab[2], in, g_nFlashCount);
+							}
+							else if (!strcmp(name, "aom2pow")) {
+								VD_mulC(in, in, g_nFlashCount, 1000.);
+								VD_trunctoUS(g_nGreenPower_Matlab, in, g_nFlashCount);
+							}
+							else if (!strcmp(name, "aom2offx")) {
+								VD_trunctoSI(g_nLocX[2], in, g_nFlashCount);
+								//	VSI_mulC(g_nLocX[2], g_nLocX[2], g_nFlashCount, -1);
+								VSI_limit( g_nLocX[2], g_nLocX[2], g_nFlashCount, -32, 32 );
+							}
+							else if (!strcmp(name, "aom2offy")) {
+								VD_trunctoSI(g_nLocY[2], in, g_nFlashCount);
+								VSI_limit( g_nLocY[2], g_nLocY[2], g_nFlashCount, -32, 32 );
+							}
+							else if (!strcmp(name, "gainseq")) {
+								V_DtoF( g_fGain_Matlab, in, g_nFlashCount);
+							}
+							else if (!strcmp(name, "angleseq")) {
+								VD_trunctoUB( g_ubAngle_Matlab, in, g_nFlashCount);
+							}
+							else if (!strcmp(name, "stimbeep")) {
+								VD_trunctoUB( g_ubStimPresFlg_Matlab, in, g_nFlashCount);
+							}
+							//get next variable
+							pa = matGetNextVariable(pmat,&name);					
+						}
+						//destroy allocated matrix
+						mxDestroyArray(pa);
+						matClose(pmat);
+
+						g_nCurFlashCount = 0; //Set the sequence position to '0'
+						g_bMatlab_Loop = bLoop;
+						g_bMatlab_Trigger = bTrigger;
+						g_bMatlab_Update = bUpdate;
+					}
+					else if (ext == "StimulusOn") {
+						g_bStimulusOn = (atoi(msg)) == 1? TRUE:FALSE;					
+					}
+					break;
+				case 'T'://terminate matlab
+					if (ext == "TurnOn") {
+						ind = atoi(msg.Left(msg.Find('#'))); //which channel
+						i = atoi(msg.Right(msg.GetLength()-msg.Find('#')-1));
+						if (ind == 0) {//IR						
+							aoslo_movie.bIRAomOn = i; 
+						}
+						else if (ind == 1) { //Red
+							aoslo_movie.bRedAomOn = i;
+						}
+						else if (ind == 2) { //Green
+							aoslo_movie.bGrAomOn = i;
+						}
+						g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0, UPDATE_AOMS_STATE);
+					}
+					else if (ext == "Trigger") { //12/15/2011
+						g_nCurFlashCount = 0;
+						if (msg == "AVI") 
+							g_bMatlabAVIsavevideo = FALSE;
+						else {
+							g_bMatlab_Trigger = TRUE;
+							g_bMatlab_Update = TRUE;					
+						}
+					}
+					else {
+						g_bMatlabCtrl = FALSE;
+						g_bMatlab_Loop = FALSE;
+						g_bMatlab_Update = FALSE;
 						g_bMatlab_Trigger = FALSE;
-						g_bMatlab_Update = TRUE;
+						g_bStimulusOn = TRUE;
 					}
-				}
-				else if (ext == "UpdatePower") {
-					ind = atoi(msg.Left(msg.Find('#')));
-					if (!ind) //IR
-						g_ncurIRPos = (int)(atof(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1))*100);
-					else if (ind == 1) //Red
-						g_ncurRedPos = (int)(atof(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1))*1000);
-					else if (ind == 2) //Green
-						g_ncurGreenPos = (int)(atof(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1))*1000);
-					g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0, UPDATE_LASERS);
-				}
-				else if (ext == "UpdateOffset") {
-				//	ind = atoi(msg.Left(msg.Find('#'))); 
-					if (!g_bTCAOverride) {
-						g_bTCAOverride = 1;
-						wnd = (CButton*)g_viewMsgVideo->GetDlgItem(IDC_TCA_OVERRIDE);
-						wnd->SetCheck(g_bTCAOverride);
-						wnd->EnableWindow(1);						
+					break;
+				case 'U': //ignore the first parameter and update the active stimuli number #IRGB#
+					if (ext == "Update") {
+						ind = atoi(msg.Left(msg.Find('#'))); //IR
+						msg = msg.Right(msg.GetLength()-msg.Find('#')-1);
+						i = atoi(msg.Left(msg.Find('#'))); //Red
+						msg = msg.Right(msg.GetLength()-msg.Find('#')-1);
+						len = atoi(msg.Left(msg.Find('#'))); //Green
+						if (aoslo_movie.stimuli_num > ind && aoslo_movie.stimuli_num > i && aoslo_movie.stimuli_num > len && !g_bMatlabVideo) {
+							if (ind == -1)
+								g_nSequence_Matlab[0][0] = aoslo_movie.stimuli_num-1;
+							else if (ind > -1)
+								g_nSequence_Matlab[0][0] = ind;
+							if (i == -1)
+								g_nSequence_Matlab[1][0] = aoslo_movie.stimuli_num-1;
+							else if (i > -1)
+								g_nSequence_Matlab[1][0] = i;
+							if (len == -1)
+								g_nSequence_Matlab[2][0] = aoslo_movie.stimuli_num-1;
+							else if (len > -1)
+								g_nSequence_Matlab[2][0] = len;
+							g_sMatlab_Update_Ind[0] = g_sMatlab_Update_Ind[1] = g_sMatlab_Update_Ind[2] = 0;
+							g_bMatlab_Loop = FALSE;
+							g_bMatlab_Trigger = FALSE;
+							g_bMatlab_Update = TRUE;
+						}
 					}
+					else if (ext == "UpdatePower") {
+						ind = atoi(msg.Left(msg.Find('#')));
+						if (!ind) //IR
+							g_ncurIRPos = (int)(atof(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1))*100);
+						else if (ind == 1) //Red
+							g_ncurRedPos = (int)(atof(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1))*1000);
+						else if (ind == 2) //Green
+							g_ncurGreenPos = (int)(atof(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1))*1000);
+						g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0, UPDATE_LASERS);
+					}
+					else if (ext == "UpdateOffset") {
+						//	ind = atoi(msg.Left(msg.Find('#'))); 
+						if (!g_bTCAOverride) {
+							g_bTCAOverride = 1;
+							wnd = (CButton*)g_viewMsgVideo->GetDlgItem(IDC_TCA_OVERRIDE);
+							wnd->SetCheck(g_bTCAOverride);
+							wnd->EnableWindow(1);						
+						}
 						ind = atoi(msg.Left(msg.Find('#'))); //OffsX						
 						g_RGBClkShiftsUser[0].x = ind;
 						msg = msg.Right(msg.GetLength()-msg.Find('#')-1);
@@ -4010,31 +4010,46 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 						ind = atoi(msg.Left(msg.Find('#'))); 
 						g_RGBClkShiftsUser[1].y = ind;
 						g_viewMsgVideo->PostMessage(WM_MOVIE_SEND, 0, UPDATE_USER_TCA);
+					}
+					break;
+				case 'V':
+					if (ext == "VPC") { //load prefix & create directory //12/15/2011
+						parent->GetSysTime(parent->m_VideoTimeStamp);
+						initials = msg.Left(msg.Find("\\",0)); //gives the prefix
+						g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_PREFIX, initials);			
+						CreateDirectory((g_ICANDIParams.VideoFolderPath+initials), NULL);
+						parent->m_VideoFolder = g_ICANDIParams.VideoFolderPath + initials + "\\" + parent->m_VideoTimeStamp + parent->m_VideoFolderSuffix + "\\";
+						//parent->m_VideoFolder = g_ICANDIParams.VideoFolderPath + msg; // was before michen+wolf
+						CreateDirectory(parent->m_VideoFolder, NULL);
+						initials.Empty();
+						parent->m_nVideoNum = 0;
+					}
+					else if (ext == "VP") { //load prefix //12/15/2011				
+						g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_PREFIX, msg);					
+					}
+					else if (ext == "VL") { //load video length
+						g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_VIDEOLEN, msg);
+					}
+					break;
+
 				}
-				break;
-			case 'V':
-				if (ext == "VPC") { //load prefix & create directory //12/15/2011
-					parent->GetSysTime(parent->m_VideoTimeStamp);
-					initials = msg.Left(msg.Find("\\",0)); //gives the prefix
-					g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_PREFIX, initials);			
-					CreateDirectory((g_ICANDIParams.VideoFolderPath+initials), NULL);
-					parent->m_VideoFolder = g_ICANDIParams.VideoFolderPath + initials + "\\" + parent->m_VideoTimeStamp + parent->m_VideoFolderSuffix + "\\";
-					//parent->m_VideoFolder = g_ICANDIParams.VideoFolderPath + msg; // was before michen+wolf
-					CreateDirectory(parent->m_VideoFolder, NULL);
-					initials.Empty();
-					parent->m_nVideoNum = 0;
+
+	
+			case WAIT_OBJECT_0+2: // getting remote controlled by IGUIDE
+				msg = parent->m_strNetRecBuff[2];
+				command = msg[0];
+				msg = msg.Right(msg.GetLength()-1);
+				switch (command) {
+					case 'R': //reset reference frame
+						g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0, STABILIZATION_GO);
+						break;
+					case 'V': //record video
+						g_viewMsgVideo->PostMessage(WM_MOVIE_SEND, 0, SAVE_VIDEO_FLAG);
+					break;
 				}
-				else if (ext == "VP") { //load prefix //12/15/2011				
-					g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_PREFIX, msg);					
-				}
-				else if (ext == "VL") { //load video length
-					g_viewMsgVideo->SetDlgItemText(IDC_EDITBOX_VIDEOLEN, msg);
-				}
-				break;
-			default:
-				break;		
+
 			}
-		}		
+
 		msg.Empty();
 	}
 }
@@ -4414,8 +4429,8 @@ CICANDIDoc::CICANDIDoc()
 		Initialize_LUT();
 	}
 
-	//Enable network message processing thread and create network listening sockets for AO and Matlab
-	m_eNetMsg = new HANDLE[2];
+	//Enable network message processing thread and create network listening sockets for AO, Matlab and IGUIDE
+	m_eNetMsg = new HANDLE[3];
 	m_eNetMsg[0] = CreateEvent(NULL, FALSE, FALSE, "ICANDI_GUI_NETCOMMMSGAO_EVENT");
 	if (!m_eNetMsg[0]) {
 		AfxMessageBox("Failed to create an event for monitoring AO Comm", MB_ICONEXCLAMATION);
@@ -4427,9 +4442,17 @@ CICANDIDoc::CICANDIDoc()
 		return;
 	}
 
-	m_strNetRecBuff = new CString[2];	
+	m_eNetMsg[2] = CreateEvent(NULL, FALSE, FALSE, "ICANDI_GUI_NETCOMMMSGIGUIDE_EVENT");
+	if (!m_eNetMsg[2]) {
+		AfxMessageBox("Failed to create an event for monitoring IGUIDE Comm", MB_ICONEXCLAMATION);
+		return;
+	}
+
+	m_strNetRecBuff = new CString[3];	
 	m_ncListener_AO = NULL;
 	m_ncListener_Matlab = NULL;
+	m_ncListener_IGUIDE = NULL;
+
 	if (CSockClient::SocketInit() != 0)
 	{
 		AfxMessageBox("Unable to initialize Windows Sockets", MB_OK|MB_ICONERROR, 0);
@@ -4458,6 +4481,18 @@ CICANDIDoc::CICANDIDoc()
 	else if (!m_ncListener_Matlab->Listen())
 	{
 		AfxMessageBox("Unable to Listen on port 1300 for Matlab comm", MB_OK|MB_ICONERROR, 0);
+	//	return;
+	}
+	//Create a listener for IGUIDE
+	m_ncListener_IGUIDE = new CSockListener(&m_strNetRecBuff[2], &m_eNetMsg[2]);
+	if (!m_ncListener_IGUIDE->InitPort("127.0.0.1", 1400))
+	{
+		AfxMessageBox("Unable to Open port 1400 for IGUIDE comm", MB_OK|MB_ICONERROR, 0);
+	//	return;
+	}
+	else if (!m_ncListener_IGUIDE->Listen())
+	{
+		AfxMessageBox("Unable to Listen on port 1400 for IGUIDE comm", MB_OK|MB_ICONERROR, 0);
 	//	return;
 	}
 
@@ -4554,7 +4589,6 @@ void CICANDIDoc::Initialize_LUT()
 CICANDIDoc::~CICANDIDoc()
 {
 //	fclose(g_fp);
-
 	V_closeMT();
 
 //	g_objVirtex5BMD.AppRemoveTCAbox(g_hDevVirtex5);
@@ -4605,8 +4639,10 @@ CICANDIDoc::~CICANDIDoc()
 	
 	delete m_ncListener_AO;
 	delete m_ncListener_Matlab;
+	delete m_ncListener_IGUIDE;
 	CloseHandle(m_eNetMsg[0]);
 	CloseHandle(m_eNetMsg[1]);
+	CloseHandle(m_eNetMsg[2]);
 	delete [] m_eNetMsg;
 
 	if (m_bMatlab) {

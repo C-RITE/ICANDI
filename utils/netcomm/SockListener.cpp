@@ -39,11 +39,14 @@ void CSockListener::OnAccept( int nError )
 {
     printf( _T("CSockListener::OnAccept(%d)\n"), nError );
     //Close of the old connection and create a new one
-	if( m_psockClient )
+	if( m_psockClient ){
 		delete m_psockClient;
+		netbuff->Empty();
+	}
 	Sleep( 1 );
 
 	//Create the new connection
+
     m_psockClient = new CSockClient(netbuff, eID);
     if( Accept( m_psockClient ) == 0 )
     {
