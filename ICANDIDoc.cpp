@@ -487,7 +487,8 @@ void g_MarkStimulusPos()
 				switch (g_ICANDIParams.FRAME_ROTATION) {
 					case 0:
 						xt = x + (int)(uj + g_ICANDIParams.RGBClkShifts[1].x + g_Channel2Shift.x);					// translation X of the target frame
-						yt = y + (int)(vj - g_ICANDIParams.RGBClkShifts[1].y - g_Channel2Shift.y);					// translation Y of the target frame
+						yt = y + (int)(vj - g_ICANDIParams.RGBClkShifts[1].y - g_Channel2Shift.y);					// translation Y of the target frame (maybe wrong? use line below?)
+						//yt = y + (int)(vj + g_ICANDIParams.RGBClkShifts[1].y + g_Channel2Shift.y);					// translation Y of the target frame
 						break;
 					case 1:
 						xt = x + (int)(uj - g_ICANDIParams.RGBClkShifts[1].y - g_Channel2Shift.y);					// translation X of the target frame
@@ -584,7 +585,8 @@ void g_MarkStimulusPos()
 				switch (g_ICANDIParams.FRAME_ROTATION) {
 					case 0:
 						xt = x + (int)(uj + g_ICANDIParams.RGBClkShifts[1].x + g_Channel2Shift.x);					// translation X of the target frame
-						yt = y + (int)(vj - g_ICANDIParams.RGBClkShifts[1].y - g_Channel2Shift.y);					// translation Y of the target frame
+						yt = y + (int)(vj + g_ICANDIParams.RGBClkShifts[1].y + g_Channel2Shift.y);					// translation Y of the target frame
+						//yt = y + (int)(vj - g_ICANDIParams.RGBClkShifts[1].y - g_Channel2Shift.y);					// translation Y of the target frame: wrong!!
 						break;
 					case 1:
 						xt = x + (int)(uj - g_ICANDIParams.RGBClkShifts[1].y - g_Channel2Shift.y);					// translation X of the target frame
@@ -1978,7 +1980,8 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 					y2 += (int)(aoslo_movie.fStabGainStim*yprime);
 				}
 
-				x0gr = x + g_Channel2Shift.x + (int)(aoslo_movie.fStabGainStim*xprime);
+				//x0gr = x + g_Channel2Shift.x + (int)(aoslo_movie.fStabGainStim*xprime); // bug: another redundant g_Channel2Shift!
+				x0gr = x + (int)(aoslo_movie.fStabGainStim*xprime);
 
 				if (bStimulus && g_bStimulusOn && aoslo_movie.FlashOnFlag) {
 					if (g_bStimProjectionGR) {
@@ -2073,7 +2076,8 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 					y2 += (int)(aoslo_movie.fStabGainStim*yprime);
 				}
 
-				x0rd = x + g_Channel1Shift.x + (int)(aoslo_movie.fStabGainStim*xprime);
+				//x0rd = x + g_Channel1Shift.x + (int)(aoslo_movie.fStabGainStim*xprime); // bug: another redundant g_Channel1Shift!
+				x0rd = x + (int)(aoslo_movie.fStabGainStim*xprime);
 
 				if (bStimulus && g_bStimulusOn && aoslo_movie.FlashOnFlag) {
 					if (g_bStimProjectionRD) {
