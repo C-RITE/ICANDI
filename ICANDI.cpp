@@ -54,6 +54,8 @@ END_MESSAGE_MAP()
 CICANDIApp::CICANDIApp()
 {
 	// TODO: add construction code here,
+
+
 	// Place all significant initialization in InitInstance
 }
 
