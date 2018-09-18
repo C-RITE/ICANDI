@@ -1577,7 +1577,7 @@ void CVirtex5BMD::AppWriteWarpWeights(WDC_DEVICE_HANDLE hDev, int nSizeX, UINT32
 	if (channelID == 0)
 		address  = BIT24;		// red channel
 	else
-		address  = BIT25;		// ir channel
+		address  = BIT25;		// ir channel --> why ir and not green? in ICANDIDoc it is green! 
 
 	// upload LUT to FPGA
 	for (i = 0; i < nSizeX; i ++) {
@@ -1634,11 +1634,13 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int x0, 
 		regLocX = (UINT32)(x0 + (i-y1)*deltax + 0.5);
 		regLocX = (regLocX-latency_x) << 10;	// data
 		VIRTEX5_WriteReg32(hDev, VIRTEX5_STIMULUS_LOC, regLocY+regLocX+ctrlBits);
+		// ATLTRACE("VIRTEX5_WriteReg32: hDev:%d VIRTEX5_STIMULUS_LOC:%d regLocY:%d regLocX:%d ctrlBits:%d y3:%d\n", hDev, VIRTEX5_STIMULUS_LOC, regLocY, regLocX, ctrlBits, y3);
 	}
 
 	// with extended stimulus pattern, add additional four lines at the end
 	// of each stripe to prevent accidental data loss.
 	// these lines will be overwritten by the next stripe if there is no data loss
+	// y3 = -1 for small stimuli
 	if (y3 == 0) {
 		for (i = y2; i < y2+4; i ++) {
 			regLocY = (i << 21);							// address
@@ -1647,7 +1649,7 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int x0, 
 		}
 	}
 
-	for (i = y2; i < y3; i ++) {
+	for (i = y2; i < y3; i ++) {	
 		regLocY = (i << 21);							// address
 		regLocX = (x1-latency_x) << 10;	// data
 		VIRTEX5_WriteReg32(hDev, VIRTEX5_STIMULUS_LOC, regLocY+regLocX+ctrlBits);
@@ -1664,20 +1666,26 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int x0, 
 			regData1 = regData1 << 16;	// reserve high 16 bits for mirror motion
 			regData2 = xLp + (xRp<<8);
 			VIRTEX5_WriteReg32(hDev, VIRTEX5_STIMULUS_X_BOUND2, regData1+regData2);
+			// ATLTRACE("IR boundaries: hDev:%d VIRTEX5_STIMULUS_X_BOUND2:%d regData1:%d regData2:%d\n", hDev, VIRTEX5_STIMULUS_X_BOUND2, regData1, regData2);
+
 		// green channel
 		} else if (channelID == STIM_CHANNEL_GR) {
 			regData1 = VIRTEX5_ReadReg32(hDev, VIRTEX5_STIMULUS_X_BOUND);
-			regData1 = regData1<<16;
-			regData1 = regData1>>16;
+			regData1 = regData1<<16;	// swapped order (compared to IR and RD)
+			regData1 = regData1>>16;	// swapped order (compared to IRand RD)
 			regData2 = (xLp<<16) + (xRp<<24);
 			VIRTEX5_WriteReg32(hDev, VIRTEX5_STIMULUS_X_BOUND, regData1+regData2);
+			// ATLTRACE("GR boundaries: hDev:%d VIRTEX5_STIMULUS_X_BOUND:%d regData1:%d regData2:%d\n", hDev, VIRTEX5_STIMULUS_X_BOUND, regData1, regData2);
+
 		// red channel
 		} else if (channelID == STIM_CHANNEL_RD) {
 			regData1 = VIRTEX5_ReadReg32(hDev, VIRTEX5_STIMULUS_X_BOUND);
 			regData1 = regData1>>16;
 			regData1 = regData1<<16;
-			regData2 = xLp + (xRp<<8);
+			regData2 = xLp + (xRp<<8);	// why same coding like IR? should be equal to Green - the other digital channel!
 			VIRTEX5_WriteReg32(hDev, VIRTEX5_STIMULUS_X_BOUND, regData1+regData2);
+			// ATLTRACE("RD boundaries: hDev:%d VIRTEX5_STIMULUS_X_BOUND:%d regData1:%d regData2:%d\n", hDev, VIRTEX5_STIMULUS_X_BOUND, regData1, regData2);
+
 		}
 	}
 }

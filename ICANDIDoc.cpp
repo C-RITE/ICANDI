@@ -153,6 +153,10 @@ BOOL              g_bStimProjection;
 BOOL              g_bStimProjectionIR;
 BOOL              g_bStimProjectionRD;
 BOOL              g_bStimProjectionGR;
+BOOL			  g_bIRstim;
+BOOL			  g_bGRstim;
+BOOL			  g_bRDstim;
+BOOL			  g_bDrawCrossMarker;	// added for a better control of stimulus-cross
 BOOL              g_bCalcStimPos;
 
 // define the shift amount of stimulus location on channel 1. 
@@ -640,6 +644,7 @@ void g_MarkStimulusPos()
 			aoslo_movie.WriteMarkFlag = FALSE;
 		}
 	}
+	g_bDrawCrossMarker = FALSE;
 }
 
 void g_WritePsyStimulus()
@@ -840,6 +845,10 @@ void g_SOFHandler()
 				aoslo_movie.fStabGainStim = g_fGain_Matlab[g_nCurFlashCount];
 				aoslo_movie.nRotateLocation = (int)g_ubAngle_Matlab[g_nCurFlashCount];
 				aoslo_movie.stimulus_audio_flag = g_ubStimPresFlg_Matlab[g_nCurFlashCount];
+				// if (aoslo_movie.stimulus_audio_flag && g_ubStimPresFlg_Matlab[g_nCurFlashCount]) {		// testing an idea from Pavan
+				// 	SetEvent(g_EventStimPresentFlag);														// testing an idea from Pavan
+				// }
+
 				if (++g_nCurFlashCount >= g_nFlashCount) {
 					g_nCurFlashCount = 0;
 					(g_bMatlab_Trigger == TRUE && g_bMatlab_Loop != TRUE) ?g_bMatlab_Update = FALSE, g_bMatlab_Trigger = FALSE:0;
@@ -1424,9 +1433,10 @@ void DLLCALLCONV VIRTEX5_IntHandler(PVOID pData)
 		g_nViewID = 1;
 		SetEvent(g_EventSendViewMsg);
 //		fprintf(g_fp, "    B: %d\n", g_sampling_counter);
-
+		
+		// tried to prevent location marking in fail-trials with additional "&& g_bDrawCrossMarker == TRUE"
 		if (((g_StimulusPos0G.x > 0 && g_StimulusPos0G.y > 0) || (g_StimulusPos.x > 0 && g_StimulusPos.y > 0)) 
-			&& aoslo_movie.stimulus_flag == TRUE && g_bStimulusOn) {
+			&& aoslo_movie.stimulus_flag == TRUE && g_bStimulusOn && g_bDrawCrossMarker == TRUE) {
 				aoslo_movie.WriteMarkFlag?g_MarkStimulusPos():0;
 		}
 		if (g_bWritePsyStimulus == TRUE)
@@ -1555,6 +1565,9 @@ void CALLBACK g_TimeoutTimerFunc(UINT wTimerID, UINT msg, DWORD dwUser, DWORD pP
 // channelID : 1-IR, 2-Green, 3-Red
 void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int iy3, int channelID)
 {
+	int hours, minutes, seconds;
+	double milliseconds;
+
 	int i, x0, xh, laser_power, nw1, nw2;
 	int x0p, xhp, xLp, xRp, deltaxp, x1, x2;
 	unsigned short *lut_loc_buf1, *lut_loc_buf2;
@@ -1638,11 +1651,13 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 	}
 	// write stimulus vertical location 
 	g_objVirtex5BMD.AppWriteStimAddrShift(g_hDevVirtex5, ny1, ny2, ny3, stimWidth, LINE_INTERVAL, channelID);
+	//ATLTRACE("write stimulus vertical location: ny1:%d,\tny2:%d,\tny3:%d,\tstimWidth:%d,\tlineIntervl:%d,\tchanID:%d\n", ny1, ny2, ny3, stimWidth, LINE_INTERVAL, channelID);
 
 	// write pre-sinusoidal lookup table
 	if (channelID == STIM_CHANNEL_IR) {
 		// write stimulus horizontal location
 		g_objVirtex5BMD.AppWriteStimLUT(g_hDevVirtex5, true, x0p, xhp, xLp, xRp, ny1, ny2, ny3, g_ICANDIParams.Desinusoid, channelID);
+		//ATLTRACE("A: write stimulus horizontal location: x0p:%d,\txhp:%d,\txLp:%d,\txRp:%d,\tny1:%d,\tny2:%d\tny3:%d,\tdesinusoid:%d,\tchanID:%d\n", x0p, xhp, xLp, xRp, ny1, ny2, ny3, g_ICANDIParams.Desinusoid, channelID);
 
 		// load IR lookup table for warping stimulus pattern
 		lut_loc_buf1 = new unsigned short [deltaxp+2];
@@ -1674,6 +1689,8 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 
 		// upload presinusoidal LUT
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf1, 7);
+		g_GetAppSystemTime(&hours, &minutes, &seconds, &milliseconds);
+		// ATLTRACE("%d:%d:%d:%f\tIR upload presinusoidal LUT: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", hours, minutes, seconds, milliseconds, stimWidth, deltaxp, lut_loc_buf1 );
 
 		delete [] lut_loc_buf1;
 
@@ -1687,6 +1704,7 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 
 	// write stimulus horizontal location
 	g_objVirtex5BMD.AppWriteStimLUT(g_hDevVirtex5, true, x0p, xhp, xLp, xRp, ny1, ny2, ny3, g_ICANDIParams.Desinusoid, channelID);
+	//ATLTRACE("B: write stimulus horizontal location: x0p:%d,\txhp:%d,\txLp:%d,\txRp:%d,\tny1:%d,\tny2:%d\tny3:%d,\tdesinusoid:%d,\tchanID:%d\n", x0p, xhp, xLp, xRp, ny1, ny2, ny3, g_ICANDIParams.Desinusoid, channelID);
 
 	lut_loc_buf1 = new unsigned short [deltaxp+2];
 	lut_loc_buf2 = new unsigned short [deltaxp+2];
@@ -1733,14 +1751,22 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 		// upload warp LUT for green stimulus pattern
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf1, 3);
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf2, 6);
+		// ATLTRACE("GREEN warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", stimWidth, deltaxp, lut_loc_buf1 );
+		// ATLTRACE("GREEN warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf2:%d\n", stimWidth, deltaxp, lut_loc_buf2 );
 		// write green pixel weights 
 		g_objVirtex5BMD.AppWriteWarpWeights(g_hDevVirtex5, deltaxp, aoslo_movie.weightsGreen, 1);
+		// ATLTRACE("GREEN pixel weight: deltaxp:%d aoslo_movie.weightsGreen:%d\n", deltaxp, aoslo_movie.weightsGreen );
+		g_bGRstim = TRUE;
 	} else if (channelID == STIM_CHANNEL_RD) {
 		// upload warp LUT for green stimulus pattern
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf1, 2);
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf2, 5);
-		// write green pixel weights 
-		g_objVirtex5BMD.AppWriteWarpWeights(g_hDevVirtex5, deltaxp, aoslo_movie.weightsGreen, 0);
+		// ATLTRACE("RED warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", stimWidth, deltaxp, lut_loc_buf1 );
+		// ATLTRACE("RED warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf2:%d\n", stimWidth, deltaxp, lut_loc_buf2 );
+		// write red pixel weights 
+		g_objVirtex5BMD.AppWriteWarpWeights(g_hDevVirtex5, deltaxp, aoslo_movie.weightsRed, 0);
+		// ATLTRACE("RED pixel weight: deltaxp:%d aoslo_movie.weightsRed:%d\n", deltaxp, aoslo_movie.weightsRed );
+		g_bRDstim = TRUE;
 	}
 
 	delete [] lut_loc_buf1;
@@ -1766,7 +1792,8 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 	static int  y1gr, y2gr, y3gr, x_ubgr, x_dbgr;
 	static int  y1rd, y2rd, y3rd, x_ubrd, x_dbrd;
 	static int  slice_start_old_ir, slice_start_old_gr, slice_start_old_rd;
-	BOOL        bIRstim;
+
+	g_bIRstim = g_bRDstim = g_bGRstim = FALSE;
 
 	// stabilization on with non-zero gain
 	if (g_bFFTIsRunning == TRUE && fabs(aoslo_movie.fStabGainStim) > 0.001) {
@@ -1859,7 +1886,6 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 					if (g_bStimProjectionIR) {
 						if (aoslo_movie.stim_num_yir<aoslo_movie.stim_ir_ny/LINE_INTERVAL) {
 							g_UpdateStimOnFPGA(x_dbir, x_ubir, aoslo_movie.stim_ir_nx, y1ir, y2ir, y3ir, STIM_CHANNEL_IR);
-							bIRstim = TRUE;
 /*
 							if (g_bTimingTest) {
 								g_GetAppSystemTime(&hours, &minutes, &seconds, &milliseconds);
@@ -1868,9 +1894,7 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 									y1ir, y2ir, y3ir, x_dbir, x_ubir, aoslo_movie.stim_num_yir);
 							}
 */
-						} else {
-							bIRstim = FALSE;
-						}
+						} 
 
 						y1ir   = y2ir;
 						x_dbir = x_ubir;
@@ -1901,10 +1925,12 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 				}
 
 			}
+
+
 		}
 
 		// ---------------------------------
-		// green stimulus
+		// green stimulus (Bonn: Frame_Rotation = 0, Berkeley = 1)
 		// ---------------------------------
 		if (g_ICANDIParams.FRAME_ROTATION) {
 			// position X on the reference frame
@@ -1988,9 +2014,9 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 						if (aoslo_movie.stim_num_ygr<aoslo_movie.stim_gr_ny/LINE_INTERVAL) {
 							g_UpdateStimOnFPGA(x_dbgr, x_ubgr, aoslo_movie.stim_gr_nx, y1gr, y2gr, y3gr, STIM_CHANNEL_GR);
 						}
-
 						y1gr   = y2gr;
 						x_dbgr = x_ubgr;
+
 					} else {
 						g_UpdateStimOnFPGA(x0gr, x0gr, aoslo_movie.stim_gr_nx, y1, y2, y3, STIM_CHANNEL_GR);
 					}
@@ -2079,10 +2105,11 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 				//x0rd = x + g_Channel1Shift.x + (int)(aoslo_movie.fStabGainStim*xprime); // bug: another redundant g_Channel1Shift!
 				x0rd = x + (int)(aoslo_movie.fStabGainStim*xprime);
 
-				if (bStimulus && g_bStimulusOn && aoslo_movie.FlashOnFlag) {
+				if (bStimulus && g_bStimulusOn && aoslo_movie.FlashOnFlag && g_bGRstim) {
 					if (g_bStimProjectionRD) {
-						if (aoslo_movie.stim_num_yrd<aoslo_movie.stim_rd_ny/LINE_INTERVAL) 
+						if (aoslo_movie.stim_num_yrd<aoslo_movie.stim_rd_ny/LINE_INTERVAL) {
 							g_UpdateStimOnFPGA(x_dbrd, x_ubrd, aoslo_movie.stim_rd_nx, y1rd, y2rd, y3rd, STIM_CHANNEL_RD);
+						}
 
 						y1rd   = y2rd;
 						x_dbrd = x_ubrd;
@@ -2091,9 +2118,33 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 					}
 				}
 			}
+			
+			// check if matlab experiment is running (set conditions more restrict)
+			if (g_bMatlabCtrl) {
+				// check if stimulus output channel is green/red or green cascade
+				if (g_nLocX[1][1] !=0  || g_nLocX[2][1] !=0) {
+					// check if update was successfull
+					if(g_bRDstim && g_bGRstim) {
+						SetEvent(g_EventStimPresentFlag);
+						g_bDrawCrossMarker = TRUE;
+						//aoslo_movie.WriteMarkFlag = TRUE;
+					}
+				} else {
+					// experiment is only IR coded, or correct delivery in Green/Red channel is not important
+					SetEvent(g_EventStimPresentFlag);
+					g_bDrawCrossMarker = TRUE;
+				}
+			} else {
+				SetEvent(g_EventStimPresentFlag);
+				g_bDrawCrossMarker = TRUE;
+					//aoslo_movie.WriteMarkFlag = TRUE;
+			}
 
 			aoslo_movie.stimulus_flag = TRUE;
-			SetEvent(g_EventStimPresentFlag);
+			g_bIRstim = g_bRDstim = g_bGRstim = FALSE;
+
+			// aoslo_movie.stimulus_audio_flag = aoslo_movie.stimulus_flag = TRUE;		// testing an idea from Pavan
+
 			if (g_bRecord);
 			//	Out32(57424,3);
 		} // valid stimulus location
@@ -2323,7 +2374,8 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 
 				aoslo_movie.stimulus_flag = TRUE;
 				SetEvent(g_EventStimPresentFlag);
-
+				g_bDrawCrossMarker = TRUE;
+				
 			} // valid stimulus location
 
 		}
@@ -3878,7 +3930,7 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 											break;
 										case 1: //flip along X axis
 											VD_trunctoSI(g_nLocY[1], in, g_nFlashCount);
-											VSI_mulC(g_nLocY[1], g_nLocY[1], g_nFlashCount, -1);
+											// VSI_mulC(g_nLocY[1], g_nLocY[1], g_nFlashCount, -1);
 											break;
 										default: ;
 								}
