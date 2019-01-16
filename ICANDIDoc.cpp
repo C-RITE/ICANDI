@@ -845,9 +845,9 @@ void g_SOFHandler()
 				aoslo_movie.fStabGainStim = g_fGain_Matlab[g_nCurFlashCount];
 				aoslo_movie.nRotateLocation = (int)g_ubAngle_Matlab[g_nCurFlashCount];
 				aoslo_movie.stimulus_audio_flag = g_ubStimPresFlg_Matlab[g_nCurFlashCount];
-				// if (aoslo_movie.stimulus_audio_flag && g_ubStimPresFlg_Matlab[g_nCurFlashCount]) {		// testing an idea from Pavan
+				//if (aoslo_movie.stimulus_audio_flag && g_ubStimPresFlg_Matlab[g_nCurFlashCount]) {		// testing an idea from Pavan
 				// 	SetEvent(g_EventStimPresentFlag);														// testing an idea from Pavan
-				// }
+				//}
 
 				if (++g_nCurFlashCount >= g_nFlashCount) {
 					g_nCurFlashCount = 0;
@@ -864,7 +864,7 @@ void g_SOFHandler()
 
 			if ((ind_ir==1 || !ind_ir) && ((ind_red==1 || !ind_red) && (ind_gr==1 || !ind_gr))) {//just turn off the stimulus				
 				w_ir = h_ir = w_red = h_red = w_gr = h_gr = 16;
-				aoslo_movie.stimulus_audio_flag = FALSE;
+				!g_ubStimPresFlg_Matlab[g_nCurFlashCount-1]?aoslo_movie.stimulus_audio_flag = FALSE:0;
 				aoslo_movie.WriteMarkFlag = FALSE;
 				g_bStimulusOn = FALSE;
 			}
@@ -1436,7 +1436,7 @@ void DLLCALLCONV VIRTEX5_IntHandler(PVOID pData)
 		
 		// tried to prevent location marking in fail-trials with additional "&& g_bDrawCrossMarker == TRUE"
 		if (((g_StimulusPos0G.x > 0 && g_StimulusPos0G.y > 0) || (g_StimulusPos.x > 0 && g_StimulusPos.y > 0)) 
-			&& aoslo_movie.stimulus_flag == TRUE && g_bStimulusOn && g_bDrawCrossMarker == TRUE) {
+			&& aoslo_movie.stimulus_flag == TRUE && g_bStimulusOn) {// && g_bDrawCrossMarker == TRUE) {
 				aoslo_movie.WriteMarkFlag?g_MarkStimulusPos():0;
 		}
 		if (g_bWritePsyStimulus == TRUE)
@@ -1690,7 +1690,7 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 		// upload presinusoidal LUT
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf1, 7);
 		g_GetAppSystemTime(&hours, &minutes, &seconds, &milliseconds);
-		// ATLTRACE("%d:%d:%d:%f\tIR upload presinusoidal LUT: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", hours, minutes, seconds, milliseconds, stimWidth, deltaxp, lut_loc_buf1 );
+		//ATLTRACE("%d:%d:%d:%f\tIR upload presinusoidal LUT: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", hours, minutes, seconds, milliseconds, stimWidth, deltaxp, lut_loc_buf1 );
 
 		delete [] lut_loc_buf1;
 
@@ -1751,21 +1751,21 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 		// upload warp LUT for green stimulus pattern
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf1, 3);
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf2, 6);
-		// ATLTRACE("GREEN warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", stimWidth, deltaxp, lut_loc_buf1 );
-		// ATLTRACE("GREEN warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf2:%d\n", stimWidth, deltaxp, lut_loc_buf2 );
+		//ATLTRACE("GREEN warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", stimWidth, deltaxp, lut_loc_buf1 );
+		//ATLTRACE("GREEN warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf2:%d\n", stimWidth, deltaxp, lut_loc_buf2 );
 		// write green pixel weights 
 		g_objVirtex5BMD.AppWriteWarpWeights(g_hDevVirtex5, deltaxp, aoslo_movie.weightsGreen, 1);
-		// ATLTRACE("GREEN pixel weight: deltaxp:%d aoslo_movie.weightsGreen:%d\n", deltaxp, aoslo_movie.weightsGreen );
+		//ATLTRACE("GREEN pixel weight: deltaxp:%d aoslo_movie.weightsGreen:%d\n", deltaxp, aoslo_movie.weightsGreen );
 		g_bGRstim = TRUE;
 	} else if (channelID == STIM_CHANNEL_RD) {
 		// upload warp LUT for green stimulus pattern
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf1, 2);
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf2, 5);
-		// ATLTRACE("RED warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", stimWidth, deltaxp, lut_loc_buf1 );
-		// ATLTRACE("RED warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf2:%d\n", stimWidth, deltaxp, lut_loc_buf2 );
+		//ATLTRACE("RED warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", stimWidth, deltaxp, lut_loc_buf1 );
+		//ATLTRACE("RED warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf2:%d\n", stimWidth, deltaxp, lut_loc_buf2 );
 		// write red pixel weights 
 		g_objVirtex5BMD.AppWriteWarpWeights(g_hDevVirtex5, deltaxp, aoslo_movie.weightsRed, 0);
-		// ATLTRACE("RED pixel weight: deltaxp:%d aoslo_movie.weightsRed:%d\n", deltaxp, aoslo_movie.weightsRed );
+		//ATLTRACE("RED pixel weight: deltaxp:%d aoslo_movie.weightsRed:%d\n", deltaxp, aoslo_movie.weightsRed );
 		g_bRDstim = TRUE;
 	}
 
@@ -1793,7 +1793,7 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 	static int  y1rd, y2rd, y3rd, x_ubrd, x_dbrd;
 	static int  slice_start_old_ir, slice_start_old_gr, slice_start_old_rd;
 
-	g_bIRstim = g_bRDstim = g_bGRstim = FALSE;
+	//g_bIRstim = g_bRDstim = g_bGRstim = FALSE;
 
 	// stabilization on with non-zero gain
 	if (g_bFFTIsRunning == TRUE && fabs(aoslo_movie.fStabGainStim) > 0.001) {
@@ -2140,10 +2140,10 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 					//aoslo_movie.WriteMarkFlag = TRUE;
 			}
 
-			aoslo_movie.stimulus_flag = TRUE;
-			g_bIRstim = g_bRDstim = g_bGRstim = FALSE;
+		aoslo_movie.stimulus_flag = TRUE;
+		//	g_bIRstim = g_bRDstim = g_bGRstim = FALSE;
 
-			// aoslo_movie.stimulus_audio_flag = aoslo_movie.stimulus_flag = TRUE;		// testing an idea from Pavan
+			//aoslo_movie.stimulus_audio_flag = aoslo_movie.stimulus_flag = TRUE;		// testing an idea from Pavan
 
 			if (g_bRecord);
 			//	Out32(57424,3);
@@ -3354,12 +3354,12 @@ DWORD WINAPI CICANDIDoc::ThreadLoadData2FPGA(LPVOID pParam)
 
 			delete [] lut_loc_buf1;
 
-			if (aoslo_movie.stimulus_audio_flag)
+		/*	if (aoslo_movie.stimulus_audio_flag)
 			{
 			//	PlaySound(MAKEINTRESOURCE(IDW_DING),AfxGetInstanceHandle(),SND_RESOURCE | SND_ASYNC);
 			//	aoslo_movie.stimulus_audio_flag = FALSE;
 				SetEvent(g_EventStimPresentFlag);
-			}
+			}*/
 			if (g_bRecord);
 			//	Out32(57424,3);
   /*
@@ -3389,11 +3389,12 @@ DWORD WINAPI CICANDIDoc::ThreadPlayStimPresentFlag(LPVOID pParam)
 	do {
 		// sample a full frame of image to Matrox buffer which is mapped to a PCI buffer
 		::WaitForSingleObject(g_EventStimPresentFlag, INFINITE);
-		if (aoslo_movie.stimulus_audio_flag)
+		if (aoslo_movie.stimulus_audio_flag && g_bFFTIsRunning)
 		{
 			Sleep(100);			
 			PlaySound(MAKEINTRESOURCE(IDW_DING),AfxGetInstanceHandle(),SND_RESOURCE | SND_ASYNC);
 			aoslo_movie.stimulus_audio_flag = FALSE;
+			g_bIRstim = g_bRDstim = g_bGRstim = FALSE;
 			//if (g_bRecord);
 			//	Out32(57424,3);
 		}
