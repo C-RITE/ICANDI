@@ -22,9 +22,9 @@
 #define  STIM_CHANNEL_GR      2
 #define  STIM_CHANNEL_RD      3
 #define  STIM_CHANNEL_NU      4
-#define  AOM_LATENCYX_IR	  13	//changed from 2 to 13, 24.5.2017, WMH
-#define  AOM_LATENCYX_RED	  10	//changed from 12 to 10, 09.06.2017, ND; from 10 to -3, 18.07.2017 ND; from -3 to 10, 02.02.2018 ND; from 10 to 8, 18.07.2017 ND; from 8 to 10, 16.01.2019 ND;
-#define  AOM_LATENCYX_GR	  5		//changed from 0 to X, 24.5.2017, WMH; from 0 to -8, 18.07.2017 ND; from -8 to 5, 02.02.2018 ND; from 5 to 3, 18.07.2017 ND; from 3 to 5, 16.01.2019 ND;
+#define  AOM_LATENCYX_IR	  10	//changed from 2 to 13, 24.5.2017, WMH; 11 for 788-driver, 10.09.2019, ND
+#define  AOM_LATENCYX_RED	  9		//changed from 12 to 10, 09.06.2017, ND; from 10 to -3, 18.07.2017 ND; from -3 to 10, 02.02.2018 ND; from 10 to 8, 18.07.2017 ND; from 8 to 10, 16.01.2019 ND; from 10 to 9, 10.09.2019 ND;
+#define  AOM_LATENCYX_GR	  4		//changed from 0 to X, 24.5.2017, WMH; from 0 to -8, 18.07.2017 ND; from -8 to 5, 02.02.2018 ND; from 5 to 3, 18.07.2017 ND; from 3 to 5, 16.01.2019 ND; from 5 to 4, 10.09.2019 ND;
 
 enum {
     VIRTEX5_DSCR_OFFSET       = 0x0,
