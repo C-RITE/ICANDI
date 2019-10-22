@@ -40,6 +40,7 @@ CView        *g_viewRawVideo;		// pointer to raw video view
 CView        *g_viewDewVideo;		// pointer to dewarped video view
 CView        *g_viewDltVideo;		// pointer to delta (stimulus position) view
 
+BOOL		  g_bConstPwr;			// stimulus constant power or constant size?
 BOOL          g_bZeroGainFlag;
 BOOL          g_bHistgram;
 BOOL          g_bStimulusOn;        // turn On/Off stimulus beam
@@ -187,6 +188,11 @@ BOOL          g_bNoGPUdevice;
 FILE*		temptest;
 // The imaging channel (IR) signal will be output to the blue channel of the on-board DAC,
 // and the stimulus location will be a 8x8 square modulated on the rectangular wave
+
+// StimDelivery: Linear Stretching global definition
+
+int* linStretch;
+
 
 
 void g_GetAppSystemTime(int *hours, int *minutes, int *seconds, double *milliseconds) {
@@ -1613,26 +1619,37 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 		}
 		x0p = i;		// stimulus center location in sinusoidal space
 
-		// presinusoid stimulus left bounday
-		xLp = x0-stimWidth/2;
-		if (xLp >= 0) {
-			for (i = 0; i < aoslo_movie.width; i ++) {
-				if (xLp < g_PatchParamsA.StretchFactor[i]) break;
+		if (!g_bConstPwr){			// constant size (N.D.20191010)
+			float HalfStim = stimWidth/2.f;
+			
+			// presinusoid stimulus left boundary
+			xLp = x0-floor(HalfStim);
+			if (xLp >= 0) {
+				for (i = 0; i < aoslo_movie.width; i ++) {
+					if (xLp < g_PatchParamsA.StretchFactor[i]) break;
+				}
+				xLp = x0p - i;
+			} else {
+				xLp = x0p;
 			}
-			xLp = x0p - i;
-		} else {
-			xLp = x0p;
+
+			// presinusoid stimulus right boundary
+			xRp = x0+ceil(HalfStim);
+			if (xRp < aoslo_movie.width) {
+				for (i = 0; i < aoslo_movie.width; i ++) {
+					if (xRp < g_PatchParamsA.StretchFactor[i]) break;
+				}
+				xRp = i - x0p - 1;
+			} else {
+				xRp = aoslo_movie.width-1-x0p;
+			}
 		}
 
-		// presinusoid stimulus right bounday
-		xRp = x0+stimWidth/2;
-		if (xRp < aoslo_movie.width) {
-			for (i = 0; i < aoslo_movie.width; i ++) {
-				if (xRp < g_PatchParamsA.StretchFactor[i]) break;
-			}
-			xRp = i - x0p - 1;
-		} else {
-			xRp = aoslo_movie.width-1-x0p;
+		else{						// constant power (N.D.20191010)
+			float HalfStimA = stimWidth/2.f;
+			float HalfStimB = stimWidth/2.f-1;
+			xLp = floor(HalfStimA);
+			xRp = ceil(HalfStimB);
 		}
 
 	} else {
@@ -1651,13 +1668,11 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 	}
 	// write stimulus vertical location 
 	g_objVirtex5BMD.AppWriteStimAddrShift(g_hDevVirtex5, ny1, ny2, ny3, stimWidth, LINE_INTERVAL, channelID);
-	//ATLTRACE("write stimulus vertical location: ny1:%d,\tny2:%d,\tny3:%d,\tstimWidth:%d,\tlineIntervl:%d,\tchanID:%d\n", ny1, ny2, ny3, stimWidth, LINE_INTERVAL, channelID);
 
 	// write pre-sinusoidal lookup table
 	if (channelID == STIM_CHANNEL_IR) {
 		// write stimulus horizontal location
 		g_objVirtex5BMD.AppWriteStimLUT(g_hDevVirtex5, true, x0p, xhp, xLp, xRp, ny1, ny2, ny3, g_ICANDIParams.Desinusoid, channelID);
-		//ATLTRACE("A: write stimulus horizontal location: x0p:%d,\txhp:%d,\txLp:%d,\txRp:%d,\tny1:%d,\tny2:%d\tny3:%d,\tdesinusoid:%d,\tchanID:%d\n", x0p, xhp, xLp, xRp, ny1, ny2, ny3, g_ICANDIParams.Desinusoid, channelID);
 
 		// load IR lookup table for warping stimulus pattern
 		lut_loc_buf1 = new unsigned short [deltaxp+2];
@@ -1667,12 +1682,21 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 			if (x0 > 0 && x0p > 0) {
 				x1 = x0p - xLp;
 				x2 = x0p + xRp;
-				x0 = (int)g_PatchParamsA.StretchFactor[x1];
 				
+				if (g_bConstPwr)
+					x0 = linStretch[x1];								// constant power (N.D.20191010)
+				else
+					x0 = (int)g_PatchParamsA.StretchFactor[x1];				// constant size(N.D.20191010)
+
 				for (i = x1; i <= x2; i ++) {
-					cent = g_PatchParamsA.StretchFactor[i]-x0;
+					if (g_bConstPwr)
+						cent = linStretch[i]-x0;							// constant power (N.D.20191010)
+					else
+						cent = g_PatchParamsA.StretchFactor[i]-x0;			// constant size(N.D.20191010)
+					
 					lut_loc_buf1[i-x1] = (unsigned short)floor(cent);
 				}
+
 			} else {
 				for (i = 0; i < deltaxp; i ++) {
 					lut_loc_buf1[i] = i;
@@ -1690,7 +1714,6 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 		// upload presinusoidal LUT
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf1, 7);
 		g_GetAppSystemTime(&hours, &minutes, &seconds, &milliseconds);
-		//ATLTRACE("%d:%d:%d:%f\tIR upload presinusoidal LUT: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", hours, minutes, seconds, milliseconds, stimWidth, deltaxp, lut_loc_buf1 );
 
 		delete [] lut_loc_buf1;
 
@@ -1704,37 +1727,73 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 
 	// write stimulus horizontal location
 	g_objVirtex5BMD.AppWriteStimLUT(g_hDevVirtex5, true, x0p, xhp, xLp, xRp, ny1, ny2, ny3, g_ICANDIParams.Desinusoid, channelID);
-	//ATLTRACE("B: write stimulus horizontal location: x0p:%d,\txhp:%d,\txLp:%d,\txRp:%d,\tny1:%d,\tny2:%d\tny3:%d,\tdesinusoid:%d,\tchanID:%d\n", x0p, xhp, xLp, xRp, ny1, ny2, ny3, g_ICANDIParams.Desinusoid, channelID);
 
 	lut_loc_buf1 = new unsigned short [deltaxp+2];
 	lut_loc_buf2 = new unsigned short [deltaxp+2];
 
 	if (g_ICANDIParams.Desinusoid == 1) {
-		// calculate mulplication of pixel weights and laser power
-		for (i = x0p-xLp; i <= x0p+xRp; i ++) {
-			cent = g_PatchParamsA.StretchFactor[i];
-			w1 = ceil(cent)-cent;
-			w2 = cent-floor(cent);
-			nw1 = (int)(w1*laser_power);
-			nw2 = (int)(w2*laser_power);
-			aoslo_movie.weightsGreen[i-x0p+xLp] = (nw1 << 16) | nw2;
+		// calculate multiplication of pixel weights and laser power
+		if (!g_bConstPwr){				// constant size (N.D.20191010)
+			for (i = x0p-xLp; i <= x0p+xRp; i ++) {
+				cent = g_PatchParamsA.StretchFactor[i];
+				w1 = ceil(cent)-cent;
+				w2 = cent-floor(cent);
+				nw1 = (int)(w1*laser_power);
+				nw2 = (int)(w2*laser_power);
+
+				if (channelID == STIM_CHANNEL_GR)			// Bug Fix, N.D.20191010 (Calculation was not written to aoslo_movie.weightsRed)
+					aoslo_movie.weightsGreen[i-x0p+xLp] = (nw1 << 16) | nw2;
+
+				else if (channelID == STIM_CHANNEL_RD)
+					aoslo_movie.weightsRed[i-x0p+xLp] = (nw1 << 16) | nw2;
+			}
+		}
+
+		else {							// constant power (N.D.20191010)
+			nw1 = laser_power >> 1;					
+			nw2 = nw1 << 16;
+			if (channelID == STIM_CHANNEL_GR){
+				for (i = 0; i < stimWidth; i ++)
+					aoslo_movie.weightsGreen[i] = nw1 | nw2;
+					}
+
+			else if (channelID == STIM_CHANNEL_RD){
+				for (i = 0; i < stimWidth; i ++)
+					aoslo_movie.weightsRed[i] = nw1 | nw2;
+			}
 		}
 
 		if (x0 > 0 && x0p > 0) {
 			x1 = x0p - xLp;
 			x2 = x0p + xRp;
-			x0 = (int)g_PatchParamsA.StretchFactor[x1];
+
+			if (g_bConstPwr)
+				x0 = linStretch[x1];									// constant power (N.D.20191010)
+			else
+				x0 = (int)g_PatchParamsA.StretchFactor[x1];				// constant size (N.D.20191010)
+			
 			
 			for (i = x1; i <= x2; i ++) {
-				cent = g_PatchParamsA.StretchFactor[i]-x0;
+				
+				if (!g_bConstPwr){				// constant size (N.D.20191010)
+					cent = g_PatchParamsA.StretchFactor[i]-x0;
+					lut_loc_buf2[i-x1] = (unsigned short)ceil(cent);
+				}
+
+				else{							// constant power (N.D.20191010)
+					cent = linStretch[i]-x0;			
+					lut_loc_buf2[i-x1] = (unsigned short)floor((cent));
+				}
+
 				lut_loc_buf1[i-x1] = (unsigned short)floor(cent);
-				lut_loc_buf2[i-x1] = (unsigned short)ceil(cent);
 			}
+
 		} else {
 			for (i = 0; i < deltaxp; i ++) {
 				lut_loc_buf2[i] = lut_loc_buf1[i] = i;
 			}
 		}
+
 	} else {
 		for (i = 0; i < stimWidth; i ++) {
 			nw1 = laser_power >> 1;
@@ -1748,24 +1807,23 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 	}
 
 	if (channelID == STIM_CHANNEL_GR) {
+
 		// upload warp LUT for green stimulus pattern
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf1, 3);
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf2, 6);
-		//ATLTRACE("GREEN warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", stimWidth, deltaxp, lut_loc_buf1 );
-		//ATLTRACE("GREEN warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf2:%d\n", stimWidth, deltaxp, lut_loc_buf2 );
+
 		// write green pixel weights 
 		g_objVirtex5BMD.AppWriteWarpWeights(g_hDevVirtex5, deltaxp, aoslo_movie.weightsGreen, 1);
-		//ATLTRACE("GREEN pixel weight: deltaxp:%d aoslo_movie.weightsGreen:%d\n", deltaxp, aoslo_movie.weightsGreen );
 		g_bGRstim = TRUE;
+
 	} else if (channelID == STIM_CHANNEL_RD) {
+
 		// upload warp LUT for green stimulus pattern
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf1, 2);
 		g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, stimWidth, deltaxp, lut_loc_buf2, 5);
-		//ATLTRACE("RED warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf1:%d\n", stimWidth, deltaxp, lut_loc_buf1 );
-		//ATLTRACE("RED warp lut stim pattern: stimWidth:%d deltaxp:%d lut_loc_buf2:%d\n", stimWidth, deltaxp, lut_loc_buf2 );
+
 		// write red pixel weights 
 		g_objVirtex5BMD.AppWriteWarpWeights(g_hDevVirtex5, deltaxp, aoslo_movie.weightsRed, 0);
-		//ATLTRACE("RED pixel weight: deltaxp:%d aoslo_movie.weightsRed:%d\n", deltaxp, aoslo_movie.weightsRed );
 		g_bRDstim = TRUE;
 	}
 
@@ -1834,8 +1892,8 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 			} else {
 				slice_height_a  = (blockID+2) * LINE_INTERVAL;
 
-				y1 = y - aoslo_movie.stim_ir_ny/2;	// start location of ir stimulus
-				y2 = y + aoslo_movie.stim_ir_ny/2;	// end location of ir stimulus
+				y1 = y - floor(aoslo_movie.stim_ir_ny/2.f);      // start location of ir stimulus
+				y2 = y + ceil(aoslo_movie.stim_ir_ny/2.f);		 // end location of ir stimulus
 				y3 = -1;
 				xpLockIR = xprime;
 				ypLockIR = yprime;
@@ -1972,8 +2030,8 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 			} else {
 				slice_height_a  = (blockID+1) * LINE_INTERVAL;
 
-				y1 = y - aoslo_movie.stim_gr_ny/2;	// start location of green stimulus
-				y2 = y + aoslo_movie.stim_gr_ny/2;	// end location of green stimulus
+				y1 = y - floor(aoslo_movie.stim_gr_ny/2.f);		// start location of green stimulus
+				y2 = y + ceil(aoslo_movie.stim_gr_ny/2.f);		// end location of green stimulus
 				y3 = -1;
 				xpLockGR = xprime;
 				ypLockGR = yprime;
@@ -2068,8 +2126,8 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 			} else {
 				slice_height_a  = (blockID+1) * LINE_INTERVAL;
 
-				y1 = y - aoslo_movie.stim_rd_ny/2;	// start location of red stimulus
-				y2 = y + aoslo_movie.stim_rd_ny/2;	// end location of red stimulus
+				y1 = y - floor(aoslo_movie.stim_rd_ny/2.f);				     // start location of red stimulus
+				y2 = y + ceil(aoslo_movie.stim_rd_ny/2.f);				     // end location of red stimulus
 				y3 = -1;
 				xpLockRD = xprime;
 				ypLockRD = yprime;
@@ -2206,69 +2264,103 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 						if (x0rd < g_PatchParamsA.StretchFactor[i]) break;
 					}
 					x_rd = i;
-					x1rd = x0rd-aoslo_movie.stim_rd_nx/2;
-					if (x1rd >= 0) {
-						for (i = 0; i < aoslo_movie.width; i ++) {
-							if (x1rd < g_PatchParamsA.StretchFactor[i]) break;
+
+					if (!g_bConstPwr){		// constant size (N.D.20191010)
+						float HalfStim = aoslo_movie.stim_rd_nx/2.f;
+						
+						x1rd = x0rd-floor(HalfStim);
+						if (x1rd >= 0) {
+							for (i = 0; i < aoslo_movie.width; i ++) {
+								if (x1rd < g_PatchParamsA.StretchFactor[i]) break;
+							}
+							x1rd = x_rd - i;
+						} else {
+							x1rd = x_rd;
 						}
-						x1rd = x_rd - i;
-					} else {
-						x1rd = x_rd;
-					}
-					x2rd = x0rd+aoslo_movie.stim_rd_nx/2;
-					if (x2rd < aoslo_movie.width) {
-						for (i = 0; i < aoslo_movie.width; i ++) {
-							if (x2rd < g_PatchParamsA.StretchFactor[i]) break;
+						
+						x2rd = x0rd+ceil(HalfStim);
+						if (x2rd < aoslo_movie.width) {
+							for (i = 0; i < aoslo_movie.width; i ++) {
+								if (x2rd < g_PatchParamsA.StretchFactor[i]) break;
+							}
+							x2rd = i - x_rd - 1;
+						} else {
+							x2rd = aoslo_movie.width-1-x_rd;
 						}
-						x2rd = i - x_rd - 1;
-					} else {
-						x2rd = aoslo_movie.width-1-x_rd;
+
+						// calculate multiplication of pixel weights and laser power
+						for (i = x_rd-x1rd; i <= x_rd+x2rd; i ++) {							// constant size (N.D.20191010)
+							cent = g_PatchParamsA.StretchFactor[i];
+							w1 = ceil(cent)-cent;											
+							w2 = cent-floor(cent);										
+							nw1 = (int)(w1*power_rd);
+							nw2 = (int)(w2*power_rd);
+							aoslo_movie.weightsRed[i-x_rd+x1rd] = (nw1 << 16) | nw2;
+						}
+
 					}
 
-					// calculate mulplication of pixel weights and laser power
-					for (i = x_rd-x1rd; i <= x_rd+x2rd; i ++) {
-						cent = g_PatchParamsA.StretchFactor[i];
-						w1 = ceil(cent)-cent;
-						w2 = cent-floor(cent);
-						nw1 = (int)(w1*power_rd);
-						nw2 = (int)(w2*power_rd);
-						aoslo_movie.weightsRed[i-x_rd+x1rd] = (nw1 << 16) | nw2;
+					else {			// constant power (N.D.20191010)
+						float HalfStimA = aoslo_movie.stim_rd_nx/2.f;
+						float HalfStimB = aoslo_movie.stim_rd_nx/2.f-1;
+						x1rd = floor(HalfStimA);
+						x2rd = ceil(HalfStimB);										
+						nw1 = power_rd >> 1;
+						nw2 = nw1 << 16;
+						for (i = 0; i < aoslo_movie.stim_rd_nx; i ++)
+							aoslo_movie.weightsRed[i] = nw1 | nw2;
 					}
-
+				
 					// presinusoid green channel stimulus
 					aoslo_movie.x_cc_gr = x0gr;
 					for (i = 0; i < aoslo_movie.width; i ++) {
 						if (x0gr < g_PatchParamsA.StretchFactor[i]) break;
 					}
 					x_gr = i;
-
-					x1gr = x0gr-aoslo_movie.stim_gr_nx/2;
-					if (x1gr >= 0) {
-						for (i = 0; i < aoslo_movie.width; i ++) {
-							if (x1gr < g_PatchParamsA.StretchFactor[i]) break;
+					
+					if (!g_bConstPwr){	// constant size (N.D.20191010)
+						float HalfStim = aoslo_movie.stim_gr_nx/2.f;
+						
+						x1gr = x0gr-floor(HalfStim);
+						if (x1gr >= 0) {
+							for (i = 0; i < aoslo_movie.width; i ++) {
+								if (x1gr < g_PatchParamsA.StretchFactor[i]) break;
+							}
+							x1gr = x_gr - i;
+						} else {
+							x1gr = x_gr;
 						}
-						x1gr = x_gr - i;
-					} else {
-						x1gr = x_gr;
-					}
-					x2gr = x0gr+aoslo_movie.stim_gr_nx/2;
-					if (x2gr < aoslo_movie.width) {
-						for (i = 0; i < aoslo_movie.width; i ++) {
-							if (x2gr < g_PatchParamsA.StretchFactor[i]) break;
+						
+						x2gr = x0gr+ceil(HalfStim);
+						if (x2gr < aoslo_movie.width) {
+							for (i = 0; i < aoslo_movie.width; i ++) {
+								if (x2gr < g_PatchParamsA.StretchFactor[i]) break;
+							}
+							x2gr = i - x_gr - 1;
+						} else {
+							x2gr = aoslo_movie.width-1-x_gr;
 						}
-						x2gr = i - x_gr - 1;
-					} else {
-						x2gr = aoslo_movie.width-1-x_gr;
+
+						// calculate multiplication of pixel weights and laser power
+						for (i = x_gr-x1gr; i <= x_gr+x2gr; i ++) {							// constant size (N.D.20191010)
+							cent = g_PatchParamsA.StretchFactor[i];
+							w1 = ceil(cent)-cent;
+							w2 = cent-floor(cent);
+							nw1 = (int)(w1*power_gr);
+							nw2 = (int)(w2*power_gr);
+							aoslo_movie.weightsGreen[i-x_gr+x1gr]  = (nw1 << 16) | nw2;
+						}
 					}
 
-					// calculate mulplication of pixel weights and laser power
-					for (i = x_gr-x1gr; i <= x_gr+x2gr; i ++) {
-						cent = g_PatchParamsA.StretchFactor[i];
-						w1 = ceil(cent)-cent;
-						w2 = cent-floor(cent);
-						nw1 = (int)(w1*power_gr);
-						nw2 = (int)(w2*power_gr);
-						aoslo_movie.weightsGreen[i-x_gr+x1gr]  = (nw1 << 16) | nw2;
+					else {				// constant power (N.D.20191010)
+						float HalfStimA = aoslo_movie.stim_gr_nx/2.f;
+						float HalfStimB = aoslo_movie.stim_gr_nx/2.f-1;
+						x1gr = floor(HalfStimA);
+						x2gr = ceil(HalfStimB);	
+						nw1 = power_gr >> 1;
+						nw2 = nw1 << 16;
+						for (i = 0; i < aoslo_movie.stim_gr_nx; i ++)
+							aoslo_movie.weightsGreen[i]  = nw1 | nw2;
 					}
 
 					// presinusoid IR channel stimulus
@@ -2277,25 +2369,38 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 						if (x0ir < g_PatchParamsA.StretchFactor[i]) break;
 					}
 					x_ir = i;
+					
+					if (!g_bConstPwr){			// constant size (N.D.20191010)
+						float HalfStim = aoslo_movie.stim_ir_nx/2.f;
+						
+						x1ir = x0ir-floor(HalfStim);
+						if (x1ir >= 0) {
+							for (i = 0; i < aoslo_movie.width; i ++) {
+								if (x1ir < g_PatchParamsA.StretchFactor[i]) break;
+							}
+							x1ir = x_ir - i;
+						} else {
+							x1ir = x_ir;
+						}
+						
+						x2ir = x0ir+ceil(HalfStim);
+						if (x2ir < aoslo_movie.width) {
+							for (i = 0; i < aoslo_movie.width; i ++) {
+								if (x2ir < g_PatchParamsA.StretchFactor[i]) break;
+							}
+							x2ir = i - x_ir - 1;
+						} else {
+							x2ir = aoslo_movie.width-1-x_ir;
+						}
+					}
 
-					x1ir = x0ir-aoslo_movie.stim_ir_nx/2;
-					if (x1ir >= 0) {
-						for (i = 0; i < aoslo_movie.width; i ++) {
-							if (x1ir < g_PatchParamsA.StretchFactor[i]) break;
-						}
-						x1ir = x_ir - i;
-					} else {
-						x1ir = x_ir;
+					else {						// constant power (N.D.20191018)
+						float HalfStimA = aoslo_movie.stim_ir_nx/2.f;
+						float HalfStimB = aoslo_movie.stim_ir_nx/2.f-1;
+						x1ir = floor(HalfStimA);
+						x2ir = ceil(HalfStimB);
 					}
-					x2ir = x0ir+aoslo_movie.stim_ir_nx/2;
-					if (x2ir < aoslo_movie.width) {
-						for (i = 0; i < aoslo_movie.width; i ++) {
-							if (x2ir < g_PatchParamsA.StretchFactor[i]) break;
-						}
-						x2ir = i - x_ir - 1;
-					} else {
-						x2ir = aoslo_movie.width-1-x_ir;
-					}
+
 				} else {
 					x_ir = x;
 //					x0gr = x+g_Channel2Shift.x;
@@ -2337,7 +2442,7 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 				}
 
 				aoslo_movie.x_center_gr= x_gr;
-				aoslo_movie.x_left_gr  = x1gr;
+				aoslo_movie.x_left_gr  = x1gr;	
 				aoslo_movie.x_right_gr = x2gr;
 				g_iStimulusSizeX_GR    = x2gr+x1gr+1;
 
@@ -2360,8 +2465,12 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 				}
 				if (aoslo_movie.stim_gr_nx==aoslo_movie.stim_rd_nx && aoslo_movie.stim_gr_ny==aoslo_movie.stim_rd_ny &&
 					aoslo_movie.stim_ir_nx==aoslo_movie.stim_rd_nx && aoslo_movie.stim_ir_ny==aoslo_movie.stim_rd_ny) {
-					g_objVirtex5BMD.AppWriteStimAddrShift(g_hDevVirtex5, y-aoslo_movie.stim_rd_ny/2, y+aoslo_movie.stim_rd_ny/2, rdShiftY, grShiftY, aoslo_movie.stim_rd_nx, -1, -100);
-					g_objVirtex5BMD.AppWriteStimLUT(g_hDevVirtex5, true, x_ir, x_ir, x_gr, x_gr, x_rd, x_rd, y-aoslo_movie.stim_rd_ny/2, y+aoslo_movie.stim_rd_ny/2, 0, rdShiftY, grShiftY, g_ICANDIParams.Desinusoid, x1ir, x2ir, x1gr, x2gr, x1rd, x2rd);
+						int y1stim, y2stim;
+						y1stim = y-floor(aoslo_movie.stim_rd_ny/2.f);		// conserve stimulus heigth (ND, 20191017)
+						y2stim = y+ceil(aoslo_movie.stim_rd_ny/2.f);		// conserve stimulus heigth (ND, 20191017)
+						g_objVirtex5BMD.AppWriteStimAddrShift(g_hDevVirtex5, y1stim, y2stim, rdShiftY, grShiftY, aoslo_movie.stim_rd_nx, -1, -100);
+						g_objVirtex5BMD.AppWriteStimLUT(g_hDevVirtex5, true, x_ir, x_ir, x_gr, x_gr, x_rd, x_rd, y1stim, y2stim, 0, rdShiftY, grShiftY, g_ICANDIParams.Desinusoid, x1ir, x2ir, x1gr, x2gr, x1rd, x2rd);
+
 				} else {
 					g_objVirtex5BMD.AppWriteStimAddrShift(g_hDevVirtex5, y, rdShiftY, grShiftY, aoslo_movie.stim_ir_nx, aoslo_movie.stim_ir_ny, aoslo_movie.stim_gr_nx, aoslo_movie.stim_gr_ny, aoslo_movie.stim_rd_nx, aoslo_movie.stim_rd_ny);
 					g_objVirtex5BMD.AppWriteStimLUT(g_hDevVirtex5, true, x_ir, y, x_gr, y+grShiftY, x_rd, y+rdShiftY, aoslo_movie.stim_ir_ny, aoslo_movie.stim_rd_ny, aoslo_movie.stim_gr_ny, g_ICANDIParams.Desinusoid, x1ir, x2ir, x1rd, x2rd, x1gr, x2gr);
@@ -3248,14 +3357,27 @@ DWORD WINAPI CICANDIDoc::ThreadLoadData2FPGA(LPVOID pParam)
 
 					x1 = aoslo_movie.x_center_gr - aoslo_movie.x_left_gr;
 					x2 = aoslo_movie.x_center_gr + aoslo_movie.x_right_gr;
-					x0 = (int)g_PatchParamsA.StretchFactor[x1];
 					deltax = x2 - x1 + 1;
-					
+
+					if (g_bConstPwr)
+						x0 = linStretch[x1];													// constant power (N.D.20191010)
+					else
+						x0 = (int)g_PatchParamsA.StretchFactor[x1];								// constant size (N.D.20191010)
+
 					for (i = x1; i <= x2; i ++) {
-						cent = g_PatchParamsA.StretchFactor[i]-x0;
+
+						if (g_bConstPwr){				// constant power (N.D.20191010)
+							cent = linStretch[i]-x0;
+							lut_loc_buf2[i-x1] = (unsigned short)floor((cent));
+						}
+						else{							// constant size (N.D.20191010)
+							cent = g_PatchParamsA.StretchFactor[i]-x0;
+							lut_loc_buf2[i-x1] = (unsigned short)ceil(cent);
+						}
+
 						lut_loc_buf1[i-x1] = (unsigned short)floor(cent);
-						lut_loc_buf2[i-x1] = (unsigned short)ceil(cent);
 					}
+
 				} else {
 					for (i = 0; i < g_iStimulusSizeX_GR; i ++) {
 						lut_loc_buf2[i] = lut_loc_buf1[i] = i;
@@ -3289,14 +3411,28 @@ DWORD WINAPI CICANDIDoc::ThreadLoadData2FPGA(LPVOID pParam)
 
 					x1 = aoslo_movie.x_center_rd - aoslo_movie.x_left_rd;
 					x2 = aoslo_movie.x_center_rd + aoslo_movie.x_right_rd;
-					x0 = (int)g_PatchParamsA.StretchFactor[x1];
 					deltax = x2 - x1 + 1;
 					
+					if (g_bConstPwr)
+						x0 = linStretch[x1];													// constant power (N.D.20191010)
+					else
+						x0 = (int)g_PatchParamsA.StretchFactor[x1];								// constant size (N.D.20191010)
+					
 					for (i = x1; i <= x2; i ++) {
-						cent = g_PatchParamsA.StretchFactor[i]-x0;
+						
+						if (g_bConstPwr){				// constant power (N.D.20191010)
+							cent = linStretch[i]-x0;
+							lut_loc_buf2[i-x1] = (unsigned short)floor((cent));
+						}
+
+						else{							// constant size (N.D.20191010)
+							cent = g_PatchParamsA.StretchFactor[i]-x0;
+							lut_loc_buf2[i-x1] = (unsigned short)ceil(cent);
+						}
+
 						lut_loc_buf1[i-x1] = (unsigned short)floor(cent);
-						lut_loc_buf2[i-x1] = (unsigned short)ceil(cent);
 					}
+
 				} else {
 					for (i = 0; i < g_iStimulusSizeX_RD; i ++) {
 						lut_loc_buf2[i] = lut_loc_buf1[i] = i;
@@ -3309,7 +3445,7 @@ DWORD WINAPI CICANDIDoc::ThreadLoadData2FPGA(LPVOID pParam)
 				}
 			}
 
-			// upload warp LUT for green stimulus pattern
+			// upload warp LUT for red stimulus pattern
 			g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, aoslo_movie.stim_rd_nx, deltax, lut_loc_buf1, 2);
 			g_objVirtex5BMD.AppWriteWarpLUT(g_hDevVirtex5, aoslo_movie.stim_rd_nx, deltax, lut_loc_buf2, 5);
 
@@ -3330,11 +3466,19 @@ DWORD WINAPI CICANDIDoc::ThreadLoadData2FPGA(LPVOID pParam)
 
 					x1 = aoslo_movie.x_center_ir - aoslo_movie.x_left_ir;
 					x2 = aoslo_movie.x_center_ir + aoslo_movie.x_right_ir;
-					x0 = (int)g_PatchParamsA.StretchFactor[x1];
 					deltax = x2 - x1 + 1;
+
+					if (g_bConstPwr)
+						x0 = linStretch[x1];									// constant power (N.D.20191010)
+					else
+						x0 = (int)g_PatchParamsA.StretchFactor[x1];
 					
 					for (i = x1; i <= x2; i ++) {
-						cent = g_PatchParamsA.StretchFactor[i]-x0;
+						if (g_bConstPwr)
+							cent = linStretch[i]-x0;							// constant power (N.D.20191010)
+						else
+							cent = g_PatchParamsA.StretchFactor[i]-x0;			// constant size(N.D.20191010)
+
 						lut_loc_buf1[i-x1] = (unsigned short)floor(cent);
 					}
 				} else {
@@ -4615,6 +4759,12 @@ CICANDIDoc::CICANDIDoc()
 	temptest = fopen("c:\\locations.txt","w+");
 	//Testing section
 
+	// for constant size or constant power option (M.L. & N.D. 2019-10-10)
+	
+	g_bConstPwr = false;
+	linStretch = new int [aoslo_movie.width];
+	for (int i = 0; i < 512; i++)
+		linStretch[i] = i;
 
 	// for testing purpose only
 	// stack stimuli on raw image
@@ -4712,6 +4862,7 @@ CICANDIDoc::~CICANDIDoc()
 	g_ICANDIParams.SaveConfigFile();
 
 	if (temptest != NULL) fclose(temptest);
+	delete [] linStretch;
 
     timeKillEvent(m_idTimerEvent);
     // reset the timer
@@ -5423,9 +5574,7 @@ void CICANDIDoc::LoadSymbol(CString filename, unsigned short* stim_buffer, int w
 	}
 
 	int i, k, n, m, sizeX, sizeY;
-
-	if (width % 2 == 0) sizeX = width;
-	else sizeX = width + 1;
+	sizeX = width + 1;					// conserve stimulus width (ND, 20191017)
 	sizeY = height;
 
 	aoslo_movie.stim_rd_nx = sizeX;
@@ -5584,8 +5733,7 @@ BOOL CICANDIDoc::LoadMultiStimuli_Matlab(int clear, CString folder, CString pref
 				return FALSE;
 			}
 			
-			if (width % 2 == 0) sizeX = width;
-			else sizeX = width + 1;
+			sizeX = width + 1;					// conserve stimulus width (ND, 20191021)
 			sizeY = height;
 			
 			aoslo_movie.stimuli_buf[i-startind+offsind] = new unsigned short[sizeX*sizeY];
@@ -5669,8 +5817,7 @@ void CICANDIDoc::LoadMultiStimuli()
 			return;
 		}
 
-		if (width % 2 == 0) sizeX = width;
-		else sizeX = width + 1;
+		sizeX = width + 1;					// conserve stimulus width (ND, 20191021)
 		sizeY = height;
 
 		aoslo_movie.stimuli_sx[i] = sizeX;
