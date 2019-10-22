@@ -10,8 +10,9 @@ utils/Green_LUT*
 utils/IR_LUT*
 utils/Red_LUT*
 utils/symbols/*
-ICANDI.exe*
-ICANDI_CASC.exe
+*.exe
+*.old
+
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)

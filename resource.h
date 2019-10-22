@@ -90,6 +90,7 @@
 #define ID_DELIVERY_MODE1               192
 #define ID_DELIVERY_MODE2               193
 #define ID_DELIVERY_MODE3               194
+#define ID_DELIVERY_CONSTPWR			195
 #define ID_STAB_RADIO                   199
 #define ID_HIST_RADIO                   200
 #define ID_TAB_CONTROLLER               201
