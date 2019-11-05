@@ -71,6 +71,7 @@ protected:
 	afx_msg void UpdateDeliveryMode1();
 	afx_msg void UpdateDeliveryMode2();
 	afx_msg void UpdateDeliveryMode3();
+	afx_msg void UpdateConstPwr();
 	afx_msg void LoadStimulus();
 	afx_msg void LoadMultiStim();
 	afx_msg void MotionScalerChkY();
@@ -135,6 +136,7 @@ private:
 	CButton m_btnDeliveryMode3;
 	CButton m_chkVoltsPerDegY;
 	CButton m_chkMotionAngleY;
+	CButton m_chkConstPwr;
 	
 	CScrollBar	m_sldLaserPow14;
 
