@@ -753,7 +753,13 @@ void CViewRawVideo::OnLButtonDblClk(UINT nFlags, CPoint point)
 			GetSinusoidX(x, aoslo_movie.TCAboxWidth, &x0, &dx);
 		}
 
-		x0 = x0 - SYSTEM_LATENCY_DAC8 - AOM_LATENCYX_IR;
+		//x0 = x0 - SYSTEM_LATENCY_DAC8 - AOM_LATENCYX_IR;
+		if (g_bImaging840)
+			x0 = x0 - SYSTEM_LATENCY_DAC8 - AOM_LATENCYX_840;
+
+		else
+			x0 = x0 - SYSTEM_LATENCY_DAC8 - AOM_LATENCYX_788;
+
 		x0 = (x0 < 1) ? 1 : x0;
 		y0 = y - aoslo_movie.TCAboxHeight/2;
 		y0 = (y0 < 1) ? 1 : y0;
