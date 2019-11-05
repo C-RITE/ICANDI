@@ -8,6 +8,7 @@
 
 #include "virtex5bmd.h"
 #include <cmath.h>
+#include "math.h"
 
 #define VIRTEX5_DEFAULT_LICENSE_STRING "6f1eafddeade6025f0620c070c601c684c5341b7ce19f2.Montana State University"
 #define VIRTEX5_DEFAULT_DRIVER_NAME "windrvr6"
@@ -1809,8 +1810,9 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int xcIR
 	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, BIT26);	
 
 	latency_x = latency?SYSTEM_LATENCY_DAC14+AOM_LATENCYX_RED:0;
-	y1 = ycRD - rdy/2;
-	y2 = ycRD + rdy/2;
+	y1 = ycRD - floor(rdy/2.f);					// conserve stimulus heigth (ND, 20191017)
+	y2 = ycRD + ceil(rdy/2.f);					// conserve stimulus heigth (ND, 20191017)
+
 	for (i = y1; i < y2; i ++) {
 		regLocY = (i << 21);							// address
 		regLocX = (UINT32)(xcRD-latency_x);
@@ -1828,8 +1830,9 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int xcIR
 	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, BIT27);	
 
 	latency_x = latency?SYSTEM_LATENCY_DAC14+AOM_LATENCYX_GR:0;
-	y1 = ycGR - gry/2;
-	y2 = ycGR + gry/2;
+	y1 = ycGR - ceil(gry/2.f);					// conserve stimulus heigth (ND, 20191017)
+	y2 = ycGR + floor(gry/2.f);					// conserve stimulus heigth (ND, 20191017)
+
 	for (i = y1; i < y2; i ++) {
 		regLocY = (i << 21);							// address
 		regLocX = (UINT32)(xcGR-latency_x);
@@ -1844,8 +1847,9 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int xcIR
 	// write IR channel
 	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, BIT16);	
 	latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_IR:0;
-	y1 = ycIR - iry/2;
-	y2 = ycIR + iry/2;
+	y1 = ycIR - ceil(iry/2.f);					// conserve stimulus heigth (ND, 20191017)
+	y2 = ycIR + floor(iry/2.f);					// conserve stimulus heigth (ND, 20191017)
+
 	for (i = y1; i < y2; i ++) {
 		regLocY = (i << 21);							// address
 		regLocX = (UINT32)(xcIR-latency_x);
@@ -2034,7 +2038,7 @@ void CVirtex5BMD::AppWriteStimAddrShift(WDC_DEVICE_HANDLE hDev, int y1, int y2, 
 void CVirtex5BMD::AppWriteStimAddrShift(WDC_DEVICE_HANDLE hDev, int yc, int ys_red, int ys_gr, int dx_ir, int dy_ir, int dx_gr, int dy_gr, int dx_rd, int dy_rd)
 {
 	UINT32  regLocY, regLocX, ctrlBits;
-	int     i, y1, y2;
+	int     i, y1, y2, HalfH1_rd, HalfH2_rd, HalfH1_gr, HalfH2_gr;
 
 	ctrlBits = VIRTEX5_ReadReg32(hDev, VIRTEX5_STIMULUS_LOC);
 	ctrlBits = ctrlBits << 22;
@@ -2042,9 +2046,12 @@ void CVirtex5BMD::AppWriteStimAddrShift(WDC_DEVICE_HANDLE hDev, int yc, int ys_r
 
 	// set "we" bit for LUT RAM, so that it is in write status
 	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, BIT28);	
+	
+	HalfH1_rd = floor(dy_rd/2.f);					// conserve stimulus heigth (ND, 20191017)
+	HalfH2_rd = ceil(dy_rd/2.f);					// conserve stimulus heigth (ND, 20191017)
+	y1 = yc - HalfH1_rd + ys_red;
+	y2 = yc + HalfH2_rd + ys_red;
 
-	y1 = yc - dy_rd/2 + ys_red;
-	y2 = yc + dy_rd/2 + ys_red;
 	for (i = y1; i < y2; i ++) {
 		regLocY = i << 21;							// address
 		regLocX = dx_rd << 10;
@@ -2057,9 +2064,12 @@ void CVirtex5BMD::AppWriteStimAddrShift(WDC_DEVICE_HANDLE hDev, int yc, int ys_r
 
 	// clear "we" bit for LUT RAM so that it is in read status
 	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, BIT29);	
+	
+	HalfH1_gr = ceil(dy_gr/2.f);					// conserve stimulus heigth (ND, 20191017)
+	HalfH2_gr = floor(dy_gr/2.f);					// conserve stimulus heigth (ND, 20191017)
+	y1 = yc - HalfH1_gr + ys_gr;
+	y2 = yc + HalfH2_gr + ys_gr;
 
-	y1 = yc - dy_gr/2 + ys_gr;
-	y2 = yc + dy_gr/2 + ys_gr;
 	for (i = y1; i < y2; i ++) {
 		regLocY = i << 21;							// address
 		regLocX = dx_gr << 10;
@@ -2068,8 +2078,9 @@ void CVirtex5BMD::AppWriteStimAddrShift(WDC_DEVICE_HANDLE hDev, int yc, int ys_r
 
 	// write IR channel
 	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, BIT17);	
-	y1 = yc - dy_ir/2;
-	y2 = yc + dy_ir/2;
+	y1 = yc - ceil(dy_ir/2.f);						// conserve stimulus heigth (ND, 20191017)
+	y2 = yc + floor(dy_ir/2.f);						// conserve stimulus heigth (ND, 20191017)
+
 	for (i = y1; i < y2; i ++) {
 		regLocY = i << 21;							// address
 		regLocX = dx_ir << 10;
