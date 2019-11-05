@@ -1605,7 +1605,13 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int x0, 
 	if (y2 <= y1) return;
 
 	if (channelID == STIM_CHANNEL_IR) {
-		latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_IR:0;
+		//latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_IR:0;
+		if (g_bImaging840)	// easy switch between imaging wavelengths
+			latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_840:0;
+
+		else
+			latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_788:0;
+		
 		wBIT = BIT16;
 	}
 	else if (channelID == STIM_CHANNEL_GR) {
@@ -1762,7 +1768,13 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int x1ir
 	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, BIT16);//weaBIT);	
 
 	deltax = (float)(1.0*(x2ir-x1ir)/(y2-y1));
-	latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_IR:0;
+	//latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_IR:0;
+	if (g_bImaging840)	// easy switch between imaging wavelengths
+		latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_840:0;
+
+	else
+		latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_788:0;
+	
 	for (i = y1; i < y2; i ++) {
 		regLocY = (i << 21);							// address
 		regLocX = (UINT32)(x1ir + (i-y1)*deltax + 0.5);
@@ -1846,7 +1858,13 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int xcIR
 	// -------------- add IR channel
 	// write IR channel
 	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, BIT16);	
-	latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_IR:0;
+	//latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_IR:0;
+	if (g_bImaging840)	// easy switch between imaging wavelengths
+		latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_840:0;
+
+	else
+		latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_788:0;
+
 	y1 = ycIR - ceil(iry/2.f);					// conserve stimulus heigth (ND, 20191017)
 	y2 = ycIR + floor(iry/2.f);					// conserve stimulus heigth (ND, 20191017)
 

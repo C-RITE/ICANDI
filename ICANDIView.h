@@ -87,6 +87,8 @@ protected:
 	afx_msg void SwitchREDAOM();
 	afx_msg void SwitchGreenAOM();
 	afx_msg void SwitchIRAOM();
+	afx_msg void SwitchTo840();
+	afx_msg void SwitchTo788();
 	afx_msg void CalibrateRed();
 	afx_msg void SaveVideoCommand();
 	afx_msg void EnableOCTSync();
@@ -137,6 +139,8 @@ private:
 	CButton m_chkVoltsPerDegY;
 	CButton m_chkMotionAngleY;
 	CButton m_chkConstPwr;
+	CButton m_Imaging840;
+	CButton m_Imaging788;
 	
 	CScrollBar	m_sldLaserPow14;
 
