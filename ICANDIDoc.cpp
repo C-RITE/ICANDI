@@ -41,7 +41,6 @@ CView        *g_viewDewVideo;		// pointer to dewarped video view
 CView        *g_viewDltVideo;		// pointer to delta (stimulus position) view
 
 BOOL		  g_bConstPwr;			// stimulus constant power or constant size?
-BOOL		  g_bImaging840;
 BOOL          g_bZeroGainFlag;
 BOOL          g_bHistgram;
 BOOL          g_bStimulusOn;        // turn On/Off stimulus beam
@@ -4766,9 +4765,6 @@ CICANDIDoc::CICANDIDoc()
 	linStretch = new int [aoslo_movie.width];
 	for (int i = 0; i < 512; i++)
 		linStretch[i] = i;
-
-	// for chosing between 840nm or 788nm latencies
-	g_bImaging840 = false;
 
 	// for testing purpose only
 	// stack stimuli on raw image

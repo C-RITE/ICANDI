@@ -9,6 +9,7 @@
 #include "virtex5bmd.h"
 #include <cmath.h>
 #include "math.h"
+#include "ICANDIParams.h"
 
 #define VIRTEX5_DEFAULT_LICENSE_STRING "6f1eafddeade6025f0620c070c601c684c5341b7ce19f2.Montana State University"
 #define VIRTEX5_DEFAULT_DRIVER_NAME "windrvr6"
@@ -21,6 +22,7 @@ int __inline roundf(const float x)
 extern void DLLCALLCONV VIRTEX5_IntHandler(PVOID pData);
 extern BOOL g_bKernelPlugin;
 extern VIDEO_INFO        g_VideoInfo;
+extern ICANDIParams    g_ICANDIParams;
 
 BOOL DeviceValidate(PWDC_DEVICE pDev)
 {
@@ -1606,7 +1608,7 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int x0, 
 
 	if (channelID == STIM_CHANNEL_IR) {
 		//latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_IR:0;
-		if (g_bImaging840)	// easy switch between imaging wavelengths
+		if (g_ICANDIParams.Imaging840)	// easy switch between imaging wavelengths
 			latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_840:0;
 
 		else
@@ -1769,7 +1771,7 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int x1ir
 
 	deltax = (float)(1.0*(x2ir-x1ir)/(y2-y1));
 	//latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_IR:0;
-	if (g_bImaging840)	// easy switch between imaging wavelengths
+	if (g_ICANDIParams.Imaging840)	// easy switch between imaging wavelengths
 		latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_840:0;
 
 	else
@@ -1859,7 +1861,7 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int xcIR
 	// write IR channel
 	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, BIT16);	
 	//latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_IR:0;
-	if (g_bImaging840)	// easy switch between imaging wavelengths
+	if (g_ICANDIParams.Imaging840)	// easy switch between imaging wavelengths
 		latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_840:0;
 
 	else

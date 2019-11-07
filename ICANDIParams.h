@@ -42,6 +42,7 @@ using std::bitset;
 #define MEMORY_POOL_LENGTH      30			// length of each memory pool, in frame number
 
 extern int			g_InvertMotionTraces;
+
 class AOSLO_MOVIE
 {
 public:
@@ -204,6 +205,7 @@ public:
 	float  VRangePerDegY;
 	float  MotionAngleX;
 	float  MotionAngleY;
+	BOOL   Imaging840;
 	CString   fnameLUT;
 	char   ImgGrabberDCF[120];	
 	BOOL   WriteMarkFlags[9];
@@ -296,6 +298,13 @@ public:
 		if (!RGBClkShifts[0].x & !RGBClkShifts[1].y & !RGBClkShifts[1].x & !!RGBClkShifts[1].y) 
 			ApplyTCA = FALSE;
 
+		// Imaging Wavelength
+		::GetPrivateProfileString("ApplicationInfo", "Imaging Wavelength", "", temp, 6, filename);
+		if(strcmp(temp, "840nm") == 0)
+			Imaging840 = true;
+		else
+			Imaging840 = false;
+
 		// Frame Info
 		// Frame rotation
 		::GetPrivateProfileString("FrameInfo", "Frame_Rotation", "", temp, 40, filename);
@@ -366,6 +375,11 @@ public:
 		flags = (((((short)(64+RGBClkShifts[0].y)<<8) | (short)(64+RGBClkShifts[1].y))<<8) | (short)(64+RGBClkShifts[2].y));
 		sprintf_s(temp, "%d", flags);
 		::WritePrivateProfileString("ApplicationInfo", "RGBClkShiftsY", temp, filename);
+		// Imaging Wavelength
+		CString wl;
+		Imaging840 ? wl="840nm" : wl="788nm";
+		::WritePrivateProfileString("ApplicationInfo", "Imaging Wavelength", wl, filename);
+		
 
 		// Frame Info
 		// frame width

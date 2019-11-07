@@ -754,7 +754,7 @@ void CViewRawVideo::OnLButtonDblClk(UINT nFlags, CPoint point)
 		}
 
 		//x0 = x0 - SYSTEM_LATENCY_DAC8 - AOM_LATENCYX_IR;
-		if (g_bImaging840)
+		if (g_ICANDIParams.Imaging840)
 			x0 = x0 - SYSTEM_LATENCY_DAC8 - AOM_LATENCYX_840;
 
 		else
