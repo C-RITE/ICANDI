@@ -9,6 +9,7 @@
 #include "utils/include/wdc_defs.h"
 #include "utils/include/utils.h"
 #include "utils/include/status_strings.h"
+
 //#include <stdio.h>
 
 #define VIRTEX5_DEFAULT_VENDOR_ID 0x10EE /* Vendor ID */
@@ -28,7 +29,6 @@
 #define  AOM_LATENCYX_RED	  9		//changed from 12 to 10, 09.06.2017, ND; from 10 to -3, 18.07.2017 ND; from -3 to 10, 02.02.2018 ND; from 10 to 8, 18.07.2017 ND; from 8 to 10, 16.01.2019 ND; from 10 to 9, 10.09.2019 ND;
 #define  AOM_LATENCYX_GR	  4		//changed from 0 to X, 24.5.2017, WMH; from 0 to -8, 18.07.2017 ND; from -8 to 5, 02.02.2018 ND; from 5 to 3, 18.07.2017 ND; from 3 to 5, 16.01.2019 ND; from 5 to 4, 10.09.2019 ND;
 
-extern BOOL  g_bImaging840;		// flip between two latencies (for 840nm or 788nm)
 
 enum {
     VIRTEX5_DSCR_OFFSET       = 0x0,
