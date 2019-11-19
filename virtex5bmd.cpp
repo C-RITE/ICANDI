@@ -1844,8 +1844,8 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int xcIR
 	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, BIT27);	
 
 	latency_x = latency?SYSTEM_LATENCY_DAC14+AOM_LATENCYX_GR:0;
-	y1 = ycGR - ceil(gry/2.f);					// conserve stimulus heigth (ND, 20191017)
-	y2 = ycGR + floor(gry/2.f);					// conserve stimulus heigth (ND, 20191017)
+	y1 = ycGR - floor(gry/2.f);					// conserve stimulus heigth (ND, 20191017)
+	y2 = ycGR + ceil(gry/2.f);					// conserve stimulus heigth (ND, 20191017)
 
 	for (i = y1; i < y2; i ++) {
 		regLocY = (i << 21);							// address
@@ -1867,8 +1867,8 @@ void CVirtex5BMD::AppWriteStimLUT(WDC_DEVICE_HANDLE hDev, bool latency, int xcIR
 	else
 		latency_x = latency?SYSTEM_LATENCY_DAC8+AOM_LATENCYX_788:0;
 
-	y1 = ycIR - ceil(iry/2.f);					// conserve stimulus heigth (ND, 20191017)
-	y2 = ycIR + floor(iry/2.f);					// conserve stimulus heigth (ND, 20191017)
+	y1 = ycIR - floor(iry/2.f);					// conserve stimulus heigth (ND, 20191017)
+	y2 = ycIR + ceil(iry/2.f);					// conserve stimulus heigth (ND, 20191017)
 
 	for (i = y1; i < y2; i ++) {
 		regLocY = (i << 21);							// address
