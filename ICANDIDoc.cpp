@@ -1619,7 +1619,7 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 		}
 		x0p = i;		// stimulus center location in sinusoidal space
 
-		if (!g_bConstPwr){			// constant size (N.D.20191010)
+		if (!g_bConstPwr || channelID == STIM_CHANNEL_IR) {			// constant size (N.D.20191010)	(always const. size for IR, ND 20191119)
 			float HalfStim = stimWidth/2.f;
 			
 			// presinusoid stimulus left boundary
@@ -1683,15 +1683,15 @@ void g_UpdateStimOnFPGA(int xc0, int xch, int stimWidth, int iy1, int iy2, int i
 				x1 = x0p - xLp;
 				x2 = x0p + xRp;
 				
-				if (g_bConstPwr)
-					x0 = linStretch[x1];								// constant power (N.D.20191010)
-				else
+				/*if (g_bConstPwr)
+					x0 = linStretch[x1];								// constant power (N.D.20191010)	 (always const. size for IR, ND 20191119)
+				else*/
 					x0 = (int)g_PatchParamsA.StretchFactor[x1];				// constant size(N.D.20191010)
 
 				for (i = x1; i <= x2; i ++) {
-					if (g_bConstPwr)
-						cent = linStretch[i]-x0;							// constant power (N.D.20191010)
-					else
+					/*if (g_bConstPwr)
+						cent = linStretch[i]-x0;							// constant power (N.D.20191010)	 (always const. size for IR, ND 20191119)
+					else*/
 						cent = g_PatchParamsA.StretchFactor[i]-x0;			// constant size(N.D.20191010)
 					
 					lut_loc_buf1[i-x1] = (unsigned short)floor(cent);
@@ -2370,7 +2370,7 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 					}
 					x_ir = i;
 					
-					if (!g_bConstPwr){			// constant size (N.D.20191010)
+					//if (!g_bConstPwr){			// constant size (N.D.20191010)	 (always const. size for IR, ND 20191119)
 						float HalfStim = aoslo_movie.stim_ir_nx/2.f;
 						
 						x1ir = x0ir-floor(HalfStim);
@@ -2392,14 +2392,14 @@ void g_StimulusDeliveryFFT(int sx, int sy, BOOL bStimulus, int blockID)
 						} else {
 							x2ir = aoslo_movie.width-1-x_ir;
 						}
-					}
+					/*}
 
-					else {						// constant power (N.D.20191018)
+					else {						// constant power (N.D.20191018)	 (always const. size for IR, ND 20191119)
 						float HalfStimA = aoslo_movie.stim_ir_nx/2.f;
 						float HalfStimB = aoslo_movie.stim_ir_nx/2.f-1;
 						x1ir = floor(HalfStimA);
 						x2ir = ceil(HalfStimB);
-					}
+					}*/
 
 				} else {
 					x_ir = x;
@@ -3468,15 +3468,15 @@ DWORD WINAPI CICANDIDoc::ThreadLoadData2FPGA(LPVOID pParam)
 					x2 = aoslo_movie.x_center_ir + aoslo_movie.x_right_ir;
 					deltax = x2 - x1 + 1;
 
-					if (g_bConstPwr)
-						x0 = linStretch[x1];									// constant power (N.D.20191010)
-					else
+					/*if (g_bConstPwr)	
+						x0 = linStretch[x1];									// constant power (N.D.20191010) (always const. size for IR, ND 20191119)
+					else*/
 						x0 = (int)g_PatchParamsA.StretchFactor[x1];
 					
 					for (i = x1; i <= x2; i ++) {
-						if (g_bConstPwr)
-							cent = linStretch[i]-x0;							// constant power (N.D.20191010)
-						else
+						/*if (g_bConstPwr)
+							cent = linStretch[i]-x0;							// constant power (N.D.20191010) (always const. size for IR, ND 20191119)
+						else*/
 							cent = g_PatchParamsA.StretchFactor[i]-x0;			// constant size(N.D.20191010)
 
 						lut_loc_buf1[i-x1] = (unsigned short)floor(cent);
