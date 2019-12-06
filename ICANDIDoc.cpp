@@ -3919,8 +3919,8 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 						folder = msg.Right(msg.GetLength()-msg.ReverseFind('#')-1);//get the folder location of stimuli					
 						msg = msg.Left(msg.GetLength()-(msg.GetLength()-msg.ReverseFind('#')));	
 						len = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));
-						if (parent->LoadMultiStimuli_Matlab(len, folder, initials, i, ind, ext) == TRUE)//load into application buffers
-							;//g_bMatlabCtrl = TRUE;//indicate application that matlab control is initiated
+						if (parent->LoadMultiStimuli_Matlab(len, folder, initials, i, ind, ext) == TRUE);//load into application buffers
+							//g_bMatlabCtrl = TRUE;//indicate application that matlab control is initiated
 					}
 					else if (ext == "Loop") {
 						g_bMatlab_Loop = atoi(msg);
@@ -4492,6 +4492,7 @@ CICANDIDoc::CICANDIDoc()
 		strCurrentDir = strCurrentDir.Left(strCurrentDir.ReverseFind('\\'));	
 	g_ICANDIParams.m_strConfigPath = strCurrentDir;
 	g_ICANDIParams.LoadConfigFile();
+	g_ICANDIParams.LoadWavelengthOptions();
 
 	// status of camera connection
 	m_bCameraConnected = FALSE;
@@ -4697,7 +4698,7 @@ CICANDIDoc::CICANDIDoc()
 	//	return;
 	}
 
-	thd_handle[6] = CreateThread(NULL, 0, ThreadNetMsgProcess, this, 0, &thdid_handle[6]);
+ 	thd_handle[6] = CreateThread(NULL, 0, ThreadNetMsgProcess, this, 0, &thdid_handle[6]);
 	SetThreadPriority(thd_handle[6], THREAD_PRIORITY_NORMAL);
 
 	m_bMatlab = false;
@@ -5764,6 +5765,7 @@ BOOL CICANDIDoc::LoadMultiStimuli_Matlab(int clear, CString folder, CString pref
 // added on 6-15-2009
 // this routine is used to test multiple stimuli delivery
 //
+
 void CICANDIDoc::LoadMultiStimuli()
 {
 	CString  ini_name, stim_name, msg;

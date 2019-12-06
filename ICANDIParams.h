@@ -217,7 +217,8 @@ public:
 //	int	   GreenShiftY;
 	BOOL   ApplyTCA;
 	POINT  RGBClkShifts[3];
-
+	CString waveLength[12];
+	
 	int    Filter;		// apply filter on raw video for FFT
 
 public:
@@ -410,10 +411,25 @@ public:
 	{
 		return (((number & (1 << whichBit)) >> whichBit)?TRUE:FALSE);
 	}
+
+	void LoadWavelengthOptions(){
+
+		char			temp1[3], temp2[2];
+		CString			filename;
+		int				wl_index = 12;
+
+		filename = _T("\\WaveLengths.ini");
+		filename = m_strConfigPath + filename;
+
+		for (int i = 0; i < wl_index; i++) {
+			itoa(i,temp2,10);
+			::GetPrivateProfileString("WaveLengths", temp2, "", temp1, 4, filename);
+			waveLength[i] = temp1;
+			}
+		   
+	}
+
 };
-
-
-
 
 /*
    the part below is a model for accessing Window XP physical memory

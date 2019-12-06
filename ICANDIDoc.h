@@ -215,6 +215,7 @@ public:
 	CString m_VideoTimeStamp;
 	CString m_VideoFolder;
 	CString m_VideoFolderSuffix;
+	CString m_waveLength;
 
 	//Stimulus location recovery 
 	CLSID	pBmpEncoder;	
