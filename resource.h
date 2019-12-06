@@ -126,6 +126,7 @@
 #define ID_MOTION_ANGLE_VALUE_LABEL     260
 #define ID_AOM_840						261
 #define ID_AOM_788						262
+#define ID_WAVELENGTH					263
 #define IDC_EDIT_PATCH_CNT              1002
 #define IDC_FRAME_X                     1004
 #define IDC_CHECK_DESINUSOID            1004
