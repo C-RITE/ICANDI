@@ -22,6 +22,7 @@ public:
 	bool InitPort(LPCTSTR sAddress = "127.0.0.1", int PortID = 0);
 	CString* netbuff;
 	HANDLE* eID;
+	virtual int	Send(char* pchBuff, int nLen, int nFlags = 0);
 	
 //Event handlers
 private:

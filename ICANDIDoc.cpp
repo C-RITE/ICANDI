@@ -4246,6 +4246,10 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 						break;
 					case 'V': //record video
 						g_viewMsgVideo->PostMessage(WM_MOVIE_SEND, 0, SAVE_VIDEO_FLAG);
+						char data[50];
+						sprintf(data, "ICANDI_VIDEODIR#%s", parent->m_VideoFolder);
+						parent->m_ncListener_IGUIDE->Listen();
+//						int p = m_ncListener_IGUIDE->Send(data, 50, 0);
 					break;
 				}
 
