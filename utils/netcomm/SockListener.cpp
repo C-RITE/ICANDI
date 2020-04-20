@@ -71,3 +71,7 @@ bool CSockListener::InitPort( LPCTSTR sAddress, int PortID )
 {
 	return(CWinSock2Async::Create(sAddress, PortID));
 }
+
+int	CSockListener::Send(char* pchBuff, int nLen, int nFlags) {
+	return m_psockClient->Send(pchBuff, nLen, nFlags = 0);
+}
