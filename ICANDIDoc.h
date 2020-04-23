@@ -116,6 +116,7 @@ public:
 	BOOL  m_bSymbol;
 	void  LoadSymbol(CString filename="", unsigned short* stim_data=NULL, int width=0, int height=0);
 	BOOL  LoadStimVideo(CString *filename, int i);
+	bool  SendNetMessage(CString message);
 
 	virtual ~CICANDIDoc();
 #ifdef _DEBUG
@@ -147,8 +148,10 @@ protected:
 	afx_msg void OnUpdateMovieNormalize(CCmdUI* pCmdUI);
 	afx_msg void OnLoadExtRef();
 	afx_msg void OnUpdateLoadExtRef(CCmdUI* pCmdUI);
-	//}}AFX_MSG
+	
 	DECLARE_MESSAGE_MAP()
+
+
 private:
 	MMRESULT m_idTimerEvent;
 	UINT    m_nTimerRes;

@@ -48,7 +48,7 @@ BOOL		  g_bMarkStimulus;
 BOOL          g_bFFTIsRunning;		// flag indicating FFT is running or not
 BOOL		  g_bRecord;	//12/15/2011
 UINT          g_frameIndex;			// counter indicating frame number processed by FFT
-ICANDIParams     g_ICANDIParams;			// struct for storing application parameters
+ICANDIParams  g_ICANDIParams;			// struct for storing application parameters
 AOSLO_MOVIE   aoslo_movie;
 PatchParams   g_PatchParamsA;		// parameters for handling matrox block-level sampling
 PatchParams   g_PatchParamsB;		// parameters for handling matrox block-level sampling
@@ -4246,10 +4246,7 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 						break;
 					case 'V': //record video
 						g_viewMsgVideo->PostMessage(WM_MOVIE_SEND, 0, SAVE_VIDEO_FLAG);
-						char data[50];
-						sprintf(data, "ICANDI_VIDEODIR#%s", parent->m_VideoFolder);
-						parent->m_ncListener_IGUIDE->Listen();
-//						int p = m_ncListener_IGUIDE->Send(data, 50, 0);
+						
 					break;
 				}
 
@@ -4331,6 +4328,7 @@ BEGIN_MESSAGE_MAP(CICANDIDoc, CDocument)
 	ON_UPDATE_COMMAND_UI(ID_STABLIZE_GO, OnUpdateStablizeGo)
 	ON_COMMAND(ID_STABLIZE_SUSPEND, OnStablizeSuspend)
 	ON_UPDATE_COMMAND_UI(ID_STABLIZE_SUSPEND, OnUpdateStablizeSuspend)
+	
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -6247,4 +6245,18 @@ void CICANDIDoc::Load_Default_Stimulus(bool inv)
 	g_iStimulusSizeX_IR    = aoslo_movie.stim_rd_nx;
 
 	g_bStimulusOn = g_bStimulusOn_bk;
+}
+
+bool CICANDIDoc::SendNetMessage(CString message){
+
+	if (m_ncListener_IGUIDE)
+	{	
+		char data[256];
+		sprintf(data, "%s", message);
+		m_ncListener_IGUIDE->Send(data, 256, 0);
+		return true;
+	}
+
+	return false;
+
 }

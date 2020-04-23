@@ -12,8 +12,7 @@ using std::bitset;
 
 
 // ========== define message handler for windows GUI ==============
-#define WM_MOVIE_SEND           WM_USER+1
-
+#define WM_MOVIE_SEND			WM_USER+1
 #define ID_GRAB_STOP           -101
 #define SEND_MOVIE_DONE        -102
 #define MOVIE_HEADER_ID        -103
