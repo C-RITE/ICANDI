@@ -4245,7 +4245,7 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 						g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0, STABILIZATION_GO);
 						break;
 					case 'V': //record video
-						g_viewMsgVideo->PostMessage(WM_MOVIE_SEND, 0, SAVE_VIDEO_FLAG);
+						g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0, SAVE_VIDEO_FLAG);
 						
 					break;
 				}
