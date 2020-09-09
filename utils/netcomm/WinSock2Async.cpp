@@ -582,9 +582,11 @@ int CWinSock2Async::Send( char* pchBuff, int nLen, int nFlags )
 {
 //	TRACE( _T("CWinSock2Async::Send( %p, %d, %d )\n"), pchBuff, nLen, nFlags );
 	ASSERT( nLen > 0 );
+	
 	EnterCriticalSection( &m_csSend );
 	int nNoSent = send( m_Sd, pchBuff, nLen, nFlags );
 	LeaveCriticalSection( &m_csSend );
+	
 	return nNoSent;
 }
 
@@ -635,6 +637,7 @@ void CWinSock2Async::OnRecieve( int nError )
 void CWinSock2Async::OnSend( int nError )
 {
 	TRACE( _T("CWinSock2Async::OnSend(%d)\n"), nError );
+
 }
 
 
