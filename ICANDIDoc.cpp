@@ -6253,8 +6253,9 @@ bool CICANDIDoc::SendNetMessage(CString message){
 	{	
 		char data[256];
 		sprintf(data, "%s", message);
-		m_ncListener_IGUIDE->Send(data, 256, 0);
-		return true;
+		int res = m_ncListener_IGUIDE->Send(data, 256, 0);
+		if (res > 0)
+			return true;
 	}
 
 	return false;
