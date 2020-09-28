@@ -3180,11 +3180,12 @@ DWORD WINAPI CICANDIDoc::ThreadStablizationFFT(LPVOID pParam)
 
 	fclose(fp);
 
-//	delete [] shift_xi;
-//	delete [] shift_yi;
-//	delete [] shift_xy;
+	//delete  shift_xi;
+	//delete  shift_yi;
+	//delete  shift_xy;
 	delete [] deltaX;
 	delete [] deltaY;
+	delete [] MarkPatch;
 
 	return 0;
 }
@@ -6251,7 +6252,7 @@ void CICANDIDoc::Load_Default_Stimulus(bool inv)
 
 bool CICANDIDoc::SendNetMessage(CString message){
 
-	if (m_ncListener_IGUIDE)
+	if (m_ncListener_IGUIDE->IsConnected())
 	{	
 		char data[256];
 		sprintf(data, "%s", message);
