@@ -387,6 +387,7 @@ bool CWinSock2Async::SetupEvents( SOCKET newSocket )
 			this,									// thread argument
 			0,										// creation option
 			&dwThreadId );							// thread identifier
+	
 	return true;
 }
 
@@ -703,7 +704,7 @@ bool CWinSock2Async::Accept( CWinSock2Async *pSockNew, sockaddr* lpSockAddr, int
 	if( sockNew == INVALID_SOCKET )
 		return false;
 
-	return pSockNew->SetupEvents( sockNew );
+	return m_bConnected = pSockNew->SetupEvents( sockNew );
 }
 
 
