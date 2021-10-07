@@ -10,6 +10,8 @@
 #include <math.h>
 #include "MatALL.h"
 #include <fstream>
+#include "opencv2/videoio/videoio_c.h"
+#include "opencv2/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
 #ifdef _DEBUG

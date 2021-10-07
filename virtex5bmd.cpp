@@ -14,10 +14,10 @@
 #define VIRTEX5_DEFAULT_LICENSE_STRING "6f1eafddeade6025f0620c070c601c684c5341b7ce19f2.Montana State University"
 #define VIRTEX5_DEFAULT_DRIVER_NAME "windrvr6"
 
-int __inline roundf(const float x)
-{
-  __asm cvtss2si eax, x
-}
+//int __inline roundf(const float x)
+//{
+//  __asm cvtss2si eax, x
+//}
 
 extern void DLLCALLCONV VIRTEX5_IntHandler(PVOID pData);
 extern BOOL g_bKernelPlugin;

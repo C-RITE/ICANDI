@@ -2,41 +2,50 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{292b173c-44fb-4c34-b968-c74769490584}</UniqueIdentifier>
+      <UniqueIdentifier>{abc55cc6-29bc-46c5-afdc-545704f45205}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{2d5dd23f-0cc6-447f-a41a-2e7c6818fbc0}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl</Extensions>
-    </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{3311c4ee-a781-44e3-a3c3-e37a8d21c529}</UniqueIdentifier>
+      <UniqueIdentifier>{629c9b40-610e-4ac5-a00b-551bffe3914b}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{ead2b997-f8b5-4801-8e57-11d074a637db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{ef7e1ae6-0747-442c-b5ca-84143ea0b62d}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CalDesinu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FadingEParams.cpp">
+    <ClCompile Include="FolderDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FolderDlg.cpp">
+    <ClCompile Include="ICANDI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ICANDIDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ICANDIParamsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ICANDIView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MainFrm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MSCGui.cpp">
+    <ClCompile Include="utils\netcomm\SockClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MSCGuiDoc.cpp">
+    <ClCompile Include="utils\netcomm\SockListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MSCGuiView.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MSCParamsDlg.cpp">
+    <ClCompile Include="StabFFT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
@@ -54,53 +63,99 @@
     <ClCompile Include="virtex5bmd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WRITEAVI.CPP">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="utils\netcomm\WinSock2Async.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\netcomm\SockClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="utils\netcomm\SockListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="MSCGui.rc">
+    <ResourceCompile Include="ICANDI.rc">
       <Filter>Source Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\bitmap01.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap02.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap03.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap04.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap05.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap06.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap07.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap08.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\icandi.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ICANDIDoc.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\MSCGui.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\StimulusOff.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\ICANDI.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CalDesinu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FadingEParams.h">
+    <ClInclude Include="FolderDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FolderDlg.h">
+    <ClInclude Include="ICANDI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ICANDIDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ICANDIParams.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ICANDIParamsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ICANDIView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MainFrm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MSCGui.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MSCGuiDoc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MSCGuiView.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MSCParams.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MSCParamsDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\netcomm\SockClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\netcomm\SockListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StabFFT.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
@@ -118,64 +173,15 @@
     <ClInclude Include="virtex5bmd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WriteAVI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="utils\netcomm\WinSock2Async.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\netcomm\SockClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\netcomm\SockListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\bitmap01.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\bitmap02.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\bitmap03.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\bitmap04.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\bitmap05.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\bitmap06.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\bitmap07.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\bitmap08.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\bitmap1.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\MSCGui.ico">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\MSCGui.rc2">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\MSCGuiDoc.ico">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\StimulusOff.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\Toolbar.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="breep.wav" />
-    <None Include="ding.wav" />
-    <None Include="ReadMe.txt" />
+    <Media Include="breep.wav" />
+    <Media Include="ding.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
 </Project>

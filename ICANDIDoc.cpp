@@ -11,7 +11,7 @@
 #include "mmsystem.h"
 #include <fstream>
 #include "matrix.h"
-#include "utils/slr.h"
+#include "utils/x64/slr.h"
 
 #include "ICANDIParams.h"
 #include "StabFFT.h"
@@ -1495,7 +1495,7 @@ PAVISTREAM g_GetAviStream(CString aviFileName, int *Frames, int *Width, int *Hei
 	*Frames = avi_info.dwLength;
 	if (avi_info.dwLength == -1)
 	{
-		CvCapture  *capture = cvCaptureFromAVI( aviFileName );
+		CvCapture* capture = cvCreateFileCapture(aviFileName);
 		cvQueryFrame( capture );
 		*Frames = (int) cvGetCaptureProperty( capture , CV_CAP_PROP_FRAME_COUNT );
 		cvReleaseCapture( &capture );
@@ -1535,7 +1535,12 @@ PAVISTREAM g_GetAviStream(CString aviFileName, int *Frames, int *Width, int *Hei
 	return pStream;
 }
 
+#if defined(_WIN64)
+void CALLBACK g_TimeoutTimerFunc(UINT wTimerID, UINT msg, DWORD_PTR dwUser, DWORD_PTR pParam, DWORD_PTR dw2)
+#else
 void CALLBACK g_TimeoutTimerFunc(UINT wTimerID, UINT msg, DWORD dwUser, DWORD pParam, DWORD dw2)
+#endif // 
+//void CALLBACK g_TimeoutTimerFunc(UINT wTimerID, UINT msg, DWORD dwUser, DWORD pParam, DWORD dw2)
 {
 	static  UINT32 timeout_cnt;
 
@@ -4708,7 +4713,7 @@ CICANDIDoc::CICANDIDoc()
 
 	m_bMatlab = false;
 	if(mclInitializeApplication(NULL,0))
-		if (slrInitialize())
+		if (SLRInitialize())
 		{
 			m_bMatlab = true;
 			m_pOldRef = NULL;
@@ -4861,7 +4866,7 @@ CICANDIDoc::~CICANDIDoc()
 	if (m_bMatlab) {
 		if (m_pOldRef) delete [] m_pOldRef;
 		
-		slrTerminate();
+		SLRTerminate();
 		mclTerminateApplication();	
 	}
 
@@ -5274,8 +5279,8 @@ void CICANDIDoc::OnMovieNormalize()
 			aviFileName.Replace(".avi",".tiff");
 			CT2CA szaviFileA(_T(aviFileName));
 			std::string straviFileA(szaviFileA);
-			vector<int> compression_params;
-			compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+			std::vector<int> compression_params;
+			compression_params.push_back(IMWRITE_PNG_COMPRESSION);
 			compression_params.push_back(0);
 			try {
 				imwrite(straviFileA, frameA, compression_params);
@@ -6205,8 +6210,8 @@ int CICANDIDoc::saveBitmap()
 	
 	CT2CA szaviFileA(_T(newreffname));
 	std::string straviFileA(szaviFileA);
-	vector<int> compression_params;
-    compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
+	std::vector<int> compression_params;
+    compression_params.push_back(IMWRITE_PNG_COMPRESSION);
     compression_params.push_back(0);
 	try {
         imwrite(straviFileA, frameA, compression_params);

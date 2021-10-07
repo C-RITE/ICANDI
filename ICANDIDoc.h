@@ -8,6 +8,8 @@
 #include <algorithm>
 #include "vfw.h"
 #include "MatALL.h"
+#include "opencv2/videoio/videoio_c.h"
+#include "opencv2/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 using namespace cv;
 
