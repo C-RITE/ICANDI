@@ -8,6 +8,17 @@
 #include <mmsystem.h>
 #include "StabFFT.h"
 
+CStabFFT::CStabFFT()
+{	
+	m_CorrPeak256 = 1.0f;
+	m_CorrPeak128 = 1.0f;
+	m_CorrPeak064 = 1.0f;
+}
+
+CStabFFT::~CStabFFT()
+{
+}
+
 //////////////////////////////////////////////////////////////////
 //
 //  The functions below are based on NVidia's CUDA technologies
@@ -21,15 +32,14 @@ int CStabFFT::ChooseCUDADevice(int deviceID)
 	return Call_CUDA_SetDevice(deviceID);
 }
 
-
-int CStabFFT::GetCUDADeviceCounts(int* counts)
+int CStabFFT::GetCUDADeviceCounts(int *counts)
 {
 	int devCount, ret;
+	
 	ret = Call_CUDA_GetDeviceCount(&devCount);
 	*counts = devCount;
 	return ret;
 }
-
 
 int CStabFFT::GetCUDADeviceNames(int deviceID, char *name) {
 	return Call_CUDA_GetDeviceNames(deviceID, name);
@@ -37,6 +47,7 @@ int CStabFFT::GetCUDADeviceNames(int deviceID, char *name) {
 
 int CStabFFT::CUDA_FFTinit(STAB_PARAMS stab_params) {
 	return Call_CUDA_FFT_init(stab_params);
+//	return 0;
 }
 
 int CStabFFT::CUDA_FFTrelease() {
@@ -56,17 +67,17 @@ int CStabFFT::GetPeakCoefsCUDA(float *coef_peak256, float *coef_peak128, float *
 }
 
 int CStabFFT::SaccadeDetectionCUDA_K(float coef_peak, int patchIdx, int *sx, int *sy) {
-	return Call_CUDA_SaccadeDetectionK(coef_peak, patchIdx, sx, sy, 0.4f);
+	return Call_CUDA_SaccadeDetectionK(coef_peak, patchIdx, sx, sy, COEF_THRESHOLD);
 }
 
 int CStabFFT::GetCenterCUDA(float coef_peak1, float coef_peak2, BOOL jumpFlag, int ofsXOld, int ofsYOld, int *ofsX, int *ofsY) {
 	bool flag = (jumpFlag) ? true : false;
 
-	return Call_CUDA_GetCenter(coef_peak1, coef_peak2, flag, ofsXOld, ofsYOld, ofsX, ofsY, 0.4f);
+	return Call_CUDA_GetCenter(coef_peak1, coef_peak2, flag, ofsXOld, ofsYOld, ofsX, ofsY, COEF_THRESHOLD);
 }
 
 int CStabFFT::GetPatchXY(int BlockID, int centerX, int centerY, int *deltaX, int *deltaY) {
-	return Call_CUDA_GetPatchXY(m_CorrPeak064, BlockID, centerX, centerY, deltaX, deltaY, 0.4f);
+	return Call_CUDA_GetPatchXY(m_CorrPeak064, BlockID, centerX, centerY, deltaX, deltaY, COEF_THRESHOLD);
 }
 
 int CStabFFT::FastConvCUDA(unsigned char *imgO, unsigned char *imgI, int imgW, int imgH, int KernelID, BOOL ref, BOOL fil) {
@@ -83,6 +94,9 @@ int CStabFFT::FastConvCUDA(unsigned char *imgO, unsigned char *imgI, int imgW, i
 	bool bEOF = (eof) ? true : false;
 	return Call_CUDA_FastConvP(imgO, imgI, KernelID, imgW, imgH, bGlobalRef, bEOF, pid, pcnt, pheight, bFilteredImg);
 }
+
+
+
 
 int CStabFFT::SaccadeDetectionK(int frameIndex, int patchIdx, int *sx, int *sy) {
 	BOOL     bGlobalRef;
@@ -108,6 +122,8 @@ int CStabFFT::SaccadeDetectionK(int frameIndex, int patchIdx, int *sx, int *sy) 
 
 	return ret_code;
 }
+
+
 
 BOOL CStabFFT::CalcCentralMotion(int cxOld, int cyOld, BOOL wideOpen, int *cxNew, int *cyNew) {
 	int cx, cy, ret_code;

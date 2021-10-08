@@ -34,76 +34,21 @@
 #define MOTION_TS_SX      8
 #define MOTION_TS_SY      8
 
-typedef struct {
-	float real;
-	float imag;
-} COMPLEX;
-
-typedef struct 		//active APERTURE struct
-{
-	int xmin;
-	int xmax;
-	int ymin;
-	int ymax;
-} APERTURE;
-
-
 #include "utils/x64/TrackKernel.h"
-#include <cuda.h>
-#include <cuda_runtime_api.h>
 
 class CStabFFT
 {
 private:
-	COMPLEX ***m_fftGloRef64P;		// save FFT of PCTCH_CNT patches on global reference frame
-	COMPLEX ***m_fftTarget64P;		// save FFT of PCTCH_CNT patches on target frame
-	COMPLEX ***m_fftLocRef64F;		// save FFT of 4 patches on local reference frame for saccade/blink detection
-	COMPLEX ***m_fftTarget64F;		// save FFT of 4 patches on target frame for saccade/blink detection
-	
-	COMPLEX **m_fftGloRef128;		
-	COMPLEX **m_fftGloRef256;
-	COMPLEX **m_fftTarget128;		
-	COMPLEX **m_fftTarget256;
-
-	BYTE  *m_imgRef;
-	BYTE  *m_imgPre;
-	short *m_imgIn;
-	short *m_imgOut;
-
-	int    m_imgWidth;
-	int    m_imgHeight;
-	float  m_coef_peak064;
-	float  m_coef_peak128;
-	float  m_coef_peak256;
-	int    m_nCenX128;
-	int    m_nCenY128;
-	int    m_nCenX256;
-	int    m_nCenY256;
-	int    m_nCenX064;
-	int    m_nCenY064;
-	int    m_nIdxX128;
-	int    m_nIdxY128;
-	int    m_nIdxX256;
-	int    m_nIdxY256;
-	int    m_nIdxX064;
-	int    m_nIdxY064;
-	int    m_nPatchCnt;
-	BOOL   m_bGloRefFFT;
-	int   *m_ofsY;
-
-	BOOL   m_bSaccadeBlink;
 	float  m_CorrPeak256;
 	float  m_CorrPeak128;
 	float  m_CorrPeak064;
 
-	int    m_dx_old;
-	int    m_dy_old;
-	int    m_refYsold;
-	int    m_tarYsold;
-
 protected: // create from serialization only
 
 public:
+	CStabFFT();
+	~CStabFFT();
+
 	int  ChooseCUDADevice(int deviceID);
 	int  GetCUDADeviceCounts(int *counts);
 	int  GetCUDADeviceNames(int deviceID, char *name);
