@@ -66,6 +66,9 @@
     <ClCompile Include="utils\netcomm\WinSock2Async.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VideoWriterVFW.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ICANDI.rc">
@@ -174,6 +177,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utils\netcomm\WinSock2Async.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoWriterVFW.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

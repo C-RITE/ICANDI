@@ -3234,26 +3234,33 @@ DWORD WINAPI CICANDIDoc::ThreadSaveVideoHDD(LPVOID pParam)
 					for (k = 0; k < movie_len; k ++) {
 						offset = k * aoslo_movie.height * aoslo_movie.width;
 						memcpy(movieA, &aoslo_movie.video_saveA1[offset], aoslo_movie.height * aoslo_movie.width);					
-						pDoc->m_aviFileA.write(frameA);
+						//pDoc->m_aviFileA.write(frameA);
+						// image is always flipped around x-axis in windows
+						pDoc->m_aviFileA.writeFrame(frameA, true);
 					}
 				} else if (aoslo_movie.memory_pool_ID == 1) {
 					for (k = 0; k < movie_len; k ++) {
 						offset = k * aoslo_movie.height * aoslo_movie.width;
 						memcpy(movieA, &aoslo_movie.video_saveA2[offset], aoslo_movie.height * aoslo_movie.width);
-						pDoc->m_aviFileA.write(frameA);
+						//pDoc->m_aviFileA.write(frameA);
+						// image is always flipped around x-axis in windows
+						pDoc->m_aviFileA.writeFrame(frameA, true);
 					}
 				} else if (aoslo_movie.memory_pool_ID == 2) {
 					for (k = 0; k < movie_len; k ++) {
 						offset = k * aoslo_movie.height * aoslo_movie.width;
 						memcpy(movieA, &aoslo_movie.video_saveA3[offset], aoslo_movie.height * aoslo_movie.width);
-						pDoc->m_aviFileA.write(frameA);
+						//pDoc->m_aviFileA.write(frameA);
+						// image is always flipped around x-axis in windows
+						pDoc->m_aviFileA.writeFrame(frameA, true);
 					}
 				}				
 			}
 
 			if (pDoc->m_bValidAviHandleA == FALSE) {
 				if (aoslo_movie.avi_handle_on_A == TRUE) {
-					pDoc->m_aviFileA.release();
+					//pDoc->m_aviFileA.release();
+					pDoc->m_aviFileA.close();
 					aoslo_movie.avi_handle_on_A = FALSE;
 				}
 			}
@@ -3268,26 +3275,33 @@ DWORD WINAPI CICANDIDoc::ThreadSaveVideoHDD(LPVOID pParam)
 					for (k = 0; k < movie_len; k ++) {
 						offset = k * aoslo_movie.dewarp_sx*aoslo_movie.dewarp_sy;
 						memcpy(movieB, &aoslo_movie.video_saveB1[offset], aoslo_movie.dewarp_sx*aoslo_movie.dewarp_sy);						
-						pDoc->m_aviFileB.write(frameB);
+						//pDoc->m_aviFileB.write(frameB);
+						// image is always flipped around x-axis in windows
+						pDoc->m_aviFileB.writeFrame(frameB, true);
 					}
 				} else if (aoslo_movie.memory_pool_ID == 1) {
 					for (k = 0; k < movie_len; k ++) {
 						offset = k * aoslo_movie.dewarp_sx*aoslo_movie.dewarp_sy;
 						memcpy(movieB, &aoslo_movie.video_saveB2[offset], aoslo_movie.dewarp_sx*aoslo_movie.dewarp_sy);						
-						pDoc->m_aviFileB.write(frameB);
+						//pDoc->m_aviFileB.write(frameB);
+						// image is always flipped around x-axis in windows
+						pDoc->m_aviFileB.writeFrame(frameB, true);
 					}
 				} else if (aoslo_movie.memory_pool_ID == 2) {
 					for (k = 0; k < movie_len; k ++) {
 						offset = k * aoslo_movie.dewarp_sx*aoslo_movie.dewarp_sy;
 						memcpy(movieB, &aoslo_movie.video_saveB3[offset], aoslo_movie.dewarp_sx*aoslo_movie.dewarp_sy);						
-						pDoc->m_aviFileB.write(frameB);
+						//pDoc->m_aviFileB.write(frameB);
+						// image is always flipped around x-axis in windows
+						pDoc->m_aviFileB.writeFrame(frameB, true);
 					}
 				}
 			}
 
 			if (pDoc->m_bValidAviHandleB == FALSE) {
 				if (aoslo_movie.avi_handle_on_B == TRUE) {
-					pDoc->m_aviFileB.release();
+					//pDoc->m_aviFileB.release();
+					pDoc->m_aviFileB.close();
 					aoslo_movie.avi_handle_on_B = FALSE;
 				}
 			}

@@ -884,10 +884,12 @@ void CICANDIView::SaveVideoCommand()
 		}
 
 		// with valid file name, now create an avi handle to save the raw video
-		if (aoslo_movie.avi_handle_on_A == TRUE) pDoc->m_aviFileA.release();		
+		if (aoslo_movie.avi_handle_on_A == TRUE) 
+			//pDoc->m_aviFileA.release();		
+			pDoc->m_aviFileA.close();
 		CT2CA szaviFileA(_T(pDoc->m_aviFileNameA));
 		std::string straviFileA(szaviFileA);
-		pDoc->m_aviFileA.open(straviFileA, 0, 30, pDoc->m_frameSizeA, false);
+		pDoc->m_aviFileA.open(straviFileA.c_str(), 0, 30, pDoc->m_frameSizeA, false);
 		if (pDoc->m_aviFileA.isOpened() == TRUE) {
 			pDoc->m_bValidAviHandleA = TRUE;
 			aoslo_movie.avi_handle_on_A = TRUE;
@@ -899,10 +901,12 @@ void CICANDIView::SaveVideoCommand()
 		}
 
 		if (m_bSaveDewarpImage == TRUE && g_bFFTIsRunning) {
-			if (aoslo_movie.avi_handle_on_B == TRUE) pDoc->m_aviFileB.release();
+			if (aoslo_movie.avi_handle_on_B == TRUE) 
+				//pDoc->m_aviFileB.release();
+				pDoc->m_aviFileB.close();
 			CT2CA szaviFileB(_T(pDoc->m_aviFileNameB));
 			std::string straviFileB(szaviFileB);
-			pDoc->m_aviFileB.open(straviFileB, 0, 30, pDoc->m_frameSizeB, false);
+			pDoc->m_aviFileB.open(straviFileB.c_str(), 0, 30, pDoc->m_frameSizeB, false);
 			if (pDoc->m_aviFileB.isOpened() == TRUE) {
 				pDoc->m_bValidAviHandleB = TRUE;
 				aoslo_movie.avi_handle_on_B = TRUE;
@@ -953,8 +957,8 @@ void CICANDIView::SaveVideoCommand()
 		}
 		
 		pDoc->m_iSavedFramesB    = 0;
-		pDoc->m_bValidAviHandleA? pDoc->m_aviFileA.release(), pDoc->m_bValidAviHandleA = FALSE:0;
-		pDoc->m_bValidAviHandleB? pDoc->m_aviFileB.release(), pDoc->m_bValidAviHandleB = FALSE:0;
+		pDoc->m_bValidAviHandleA? pDoc->m_aviFileA.close/*release*/(), pDoc->m_bValidAviHandleA = FALSE : 0;
+		pDoc->m_bValidAviHandleB? pDoc->m_aviFileB.close/*release*/(), pDoc->m_bValidAviHandleB = FALSE : 0;
 		
 		m_btnDewarpName.EnableWindow(TRUE);
 

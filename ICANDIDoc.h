@@ -11,6 +11,8 @@
 #include "opencv2/videoio/videoio_c.h"
 #include "opencv2/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
+#include "VideoWriterVFW.h"
+
 using namespace cv;
 
 #if !defined(AFX_ICANDIDOC_H__6ABEA42C_1404_481D_888B_C3BE7E912E99__INCLUDED_)
@@ -205,8 +207,10 @@ public:
 	CString  m_videoFileName;
 	UINT     m_iSavedFramesA;			// frame number for raw video
 	UINT     m_iSavedFramesB;			// frame number for stabilized video
-	VideoWriter m_aviFileA;				// AVI hander for raw video
-	VideoWriter m_aviFileB;				// AVI hander for stabilized video
+	//VideoWriter m_aviFileA;				// AVI hander for raw video
+	VideoWriterVFW m_aviFileA;
+	//VideoWriter m_aviFileB;				// AVI hander for stabilized video
+	VideoWriterVFW m_aviFileB;
 	cv::Size	 m_frameSizeA;
 	cv::Size	 m_frameSizeB;
 	FILE    *m_fpStimPos;				// txt file pointer for stimulus positions

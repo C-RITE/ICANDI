@@ -286,6 +286,7 @@
     <ClCompile Include="ICANDIParamsDlg.cpp" />
     <ClCompile Include="ICANDIView.cpp" />
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="VideoWriterVFW.cpp" />
     <ClCompile Include="StabFFT.cpp" />
     <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="utils\netcomm\SockClient.cpp" />
@@ -327,6 +328,7 @@
     <ClInclude Include="ICANDIParamsDlg.h" />
     <ClInclude Include="ICANDIView.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="VideoWriterVFW.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StabFFT.h" />
     <ClInclude Include="StdAfx.h" />

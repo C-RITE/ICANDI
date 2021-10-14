@@ -717,7 +717,7 @@ void CCalDesinu::OnLoadGrids()
 	m_pStream1 = GetAviStream(aviFileName1, &frames, &fWidth, &fHeight, &iFirstFrame);
 
 	if (m_pStream1 == NULL) {
-		AVIStreamRelease(m_pStream1);
+		//AVIStreamRelease(m_pStream1);
 		AVIFileExit();
 		MessageBox("Error: can't open avi stream", "Desinusoiding", MB_ICONWARNING);
 		return;
@@ -1041,6 +1041,41 @@ PAVISTREAM CCalDesinu::GetAviStream(CString aviFileName, int *Frames, int *Width
     int res = AVIFileOpen(&avi, aviFileName, OF_READ, NULL);
 
     if (res != AVIERR_OK) {
+		if (res == AVIERR_BADFORMAT) {
+			//an error occures
+			SetCursor(LoadCursor(NULL, IDC_ARROW));
+			msg = "Error: AVIERR_BADFORMAT";
+			MessageBox(msg, "Desinusoiding", MB_ICONWARNING);
+		}
+		else if (res == AVIERR_MEMORY)
+		{
+			//an error occures
+			SetCursor(LoadCursor(NULL, IDC_ARROW));
+			msg = "Error: AVIERR_MEMORY";
+			MessageBox(msg, "Desinusoiding", MB_ICONWARNING);
+		}
+		else if (res == AVIERR_FILEREAD)
+		{
+			//an error occures
+			SetCursor(LoadCursor(NULL, IDC_ARROW));
+			msg = "Error: AVIERR_FILEREAD";
+			MessageBox(msg, "Desinusoiding", MB_ICONWARNING);
+		}
+		else if (res == AVIERR_FILEOPEN)
+		{
+			//an error occures
+			SetCursor(LoadCursor(NULL, IDC_ARROW));
+			msg = "Error: AVIERR_FILEOPEN";
+			MessageBox(msg, "Desinusoiding", MB_ICONWARNING);
+		}
+		else if (res == REGDB_E_CLASSNOTREG)
+		{
+			//an error occures
+			SetCursor(LoadCursor(NULL, IDC_ARROW));
+			msg = "Error: REGDB_E_CLASSNOTREG";
+			MessageBox(msg, "Desinusoiding", MB_ICONWARNING);
+		}
+
         //an error occures
 		SetCursor(LoadCursor(NULL, IDC_ARROW));
 		msg = "Error: can't read file <" + aviFileName;
@@ -1049,18 +1084,25 @@ PAVISTREAM CCalDesinu::GetAviStream(CString aviFileName, int *Frames, int *Width
         
         return NULL;
     }
-
+	
     AVIFILEINFO avi_info;
     AVIFileInfo(avi, &avi_info, sizeof(AVIFILEINFO));
 
     PAVISTREAM  pStream;
     res = AVIFileGetStream(avi, &pStream, streamtypeVIDEO /*video stream*/, 
                                                0 /*first stream*/);
+	cv::VideoCapture* capture = new cv::VideoCapture(cv::String(aviFileName), 0);
+	if (capture->isOpened())
+	{
+		*Frames = (int)capture->get(cv::CAP_PROP_FRAME_COUNT);
+		capture->release();
+		capture = NULL;
+	}
 
-	CvCapture  *capture = cvCaptureFromAVI( aviFileName );
-	cvQueryFrame( capture );
+	//CvCapture  *capture = cvCreateFileCapture( aviFileName );
+	/*cvQueryFrame( capture );
 	*Frames = (int) cvGetCaptureProperty( capture , CV_CAP_PROP_FRAME_COUNT );
-	cvReleaseCapture( &capture );
+	cvReleaseCapture( &capture );*/
 	//*Frames = avi_info.dwLength;
 	// *Width  = avi_info.dwWidth;
 	*Width  = (avi_info.dwWidth % 4 == 0) ? avi_info.dwWidth : (avi_info.dwWidth/4)*4+4;
