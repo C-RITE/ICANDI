@@ -154,7 +154,7 @@ CICANDIView::CICANDIView()
 	m_ButtonHeight     = 20;
 	m_ButtonWidth      = 110;
 
-	for (int i = 0; i < 15; i ++) m_StimFreq[i] = 30;
+	for (int i = 0; i < 15; i ++) m_StimFreq[i] = GRABBER_FRAME_RATE;//30;
 	m_FreqCount        = 8;
 	m_StimFreq[0]      = 1;
 	m_StimFreq[1]      = 2;
@@ -889,7 +889,7 @@ void CICANDIView::SaveVideoCommand()
 			pDoc->m_aviFileA.close();
 		CT2CA szaviFileA(_T(pDoc->m_aviFileNameA));
 		std::string straviFileA(szaviFileA);
-		pDoc->m_aviFileA.open(straviFileA.c_str(), 0, 30, pDoc->m_frameSizeA, false);
+		pDoc->m_aviFileA.open(straviFileA.c_str(), 0, GRABBER_FRAME_RATE /*30*/, pDoc->m_frameSizeA, false);
 		if (pDoc->m_aviFileA.isOpened() == TRUE) {
 			pDoc->m_bValidAviHandleA = TRUE;
 			aoslo_movie.avi_handle_on_A = TRUE;
@@ -906,7 +906,7 @@ void CICANDIView::SaveVideoCommand()
 				pDoc->m_aviFileB.close();
 			CT2CA szaviFileB(_T(pDoc->m_aviFileNameB));
 			std::string straviFileB(szaviFileB);
-			pDoc->m_aviFileB.open(straviFileB.c_str(), 0, 30, pDoc->m_frameSizeB, false);
+			pDoc->m_aviFileB.open(straviFileB.c_str(), 0, GRABBER_FRAME_RATE /*30*/, pDoc->m_frameSizeB, false);
 			if (pDoc->m_aviFileB.isOpened() == TRUE) {
 				pDoc->m_bValidAviHandleB = TRUE;
 				aoslo_movie.avi_handle_on_B = TRUE;
@@ -919,7 +919,7 @@ void CICANDIView::SaveVideoCommand()
 		}
 		
 		m_edtVideoLen.GetWindowText(text);
-		pDoc->m_nMovieLength = 30*atoi(text);
+		pDoc->m_nMovieLength = GRABBER_FRAME_RATE/*30*/*atoi(text);
 		if (pDoc->m_bValidAviHandleA == TRUE && pDoc->m_bValidAviHandleB == TRUE) {
 			// maximum length of video will be truncated to 40 seconds
 			if (pDoc->m_nMovieLength > 9000) {
@@ -932,7 +932,7 @@ void CICANDIView::SaveVideoCommand()
 			}
 		}
 		
-		text.Format("%d", pDoc->m_nMovieLength/30);
+		text.Format("%d", pDoc->m_nMovieLength/GRABBER_FRAME_RATE/*30*/);
 		m_edtVideoLen.SetWindowText(text);
 
 		pDoc->m_iSavedFramesA = 0;

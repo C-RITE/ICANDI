@@ -36,9 +36,14 @@ using std::bitset;
 #define UPDATE_STIM_POS_MATLAB  283
 #define UPDATE_USER_TCA			284
 
-#define GRABBER_FRAME_RATE      30			// define frame rate of image grabber
+#define HORIZONTAL_FREQ			13900
+#define GRABBER_FRAME_RATE      int(HORIZONTAL_FREQ/512)			// define frame rate of image grabber
 #define MAX_STIMULUS_NUMBER     99			// define frame rate of image grabber
-#define MEMORY_POOL_LENGTH      30			// length of each memory pool, in frame number
+#define MEMORY_POOL_LENGTH      int(HORIZONTAL_FREQ/512)			// length of each memory pool, in frame number
+
+// #define GRABBER_FRAME_RATE      30			// define frame rate of image grabber
+// #define MAX_STIMULUS_NUMBER     99			// define frame rate of image grabber
+// #define MEMORY_POOL_LENGTH      30			// length of each memory pool, in frame number
 
 extern int			g_InvertMotionTraces;
 

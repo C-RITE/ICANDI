@@ -424,15 +424,15 @@ void CViewRawVideo::DrawMovie(CDC *pDC)
 	}
 
 	if (pDoc->m_iSavedFramesA > 0) {		
-		if (pDoc->m_iSavedFramesA%60 == 0 || pDoc->m_iSavedFramesA%60 == 1) {
+		if (pDoc->m_iSavedFramesA%(GRABBER_FRAME_RATE*2)/*60*/ == 0 || pDoc->m_iSavedFramesA%(GRABBER_FRAME_RATE*2)/*60*/ == 1) {
 			CString msg;
-			msg.Format("...Grabbing... %d sec             ", (int)(pDoc->m_iSavedFramesA/60));//
+			msg.Format("...Grabbing... %d sec             ", (int)(pDoc->m_iSavedFramesA/(GRABBER_FRAME_RATE*2)/*60*/));//
 			m_msgTimeElapse.SetWindowText(msg);
 		}
 	} else {
-		if ((g_sampling_counter+1)%30 == 0) {
+		if ((g_sampling_counter+1)%GRABBER_FRAME_RATE/*30*/ == 0) {
 			CString msg;
-			msg.Format("Time elapsed: %d sec             ", (int)((g_sampling_counter+1)/30));
+			msg.Format("Time elapsed: %d sec             ", (int)((g_sampling_counter+1)/GRABBER_FRAME_RATE/*30*/));
 			m_msgTimeElapse.SetWindowText(msg);
 		}
 	}

@@ -1048,7 +1048,7 @@ void g_SOFHandler()
 	// testing multiple stimuli delivery. Additional codes are needed for specified features
 	//
 	if (g_bMultiStimuli == TRUE) {
-		k = g_sampling_counter / 30;
+		k = g_sampling_counter / GRABBER_FRAME_RATE;//30;
 		for (i = 0; i < aoslo_movie.stimuli_num; i ++) {
 			// load static images to FPGA as stimulus
 			if (k%aoslo_movie.stimuli_num == i) {
@@ -1308,7 +1308,7 @@ void DLLCALLCONV VIRTEX5_IntHandler(PVOID pData)
 	}
 
 /*
-	int rem = g_sampling_counter%30;
+	int rem = g_sampling_counter%GRABBER_FRAME_RATE;//30;
 	if (rem==21||rem==22||rem==23||rem==24||rem==25) {
 		ZeroMemory(g_PatchParamsA.img_sliceR, aoslo_movie.width*aoslo_movie.height);
 	} else {*/
@@ -1495,10 +1495,17 @@ PAVISTREAM g_GetAviStream(CString aviFileName, int *Frames, int *Width, int *Hei
 	*Frames = avi_info.dwLength;
 	if (avi_info.dwLength == -1)
 	{
-		CvCapture* capture = cvCreateFileCapture(aviFileName);
-		cvQueryFrame( capture );
-		*Frames = (int) cvGetCaptureProperty( capture , CV_CAP_PROP_FRAME_COUNT );
-		cvReleaseCapture( &capture );
+		cv::VideoCapture* capture = new cv::VideoCapture(cv::String(aviFileName), 0);
+		if (capture->isOpened())
+		{
+			*Frames = (int)capture->get(cv::CAP_PROP_FRAME_COUNT);
+			capture->release();
+			capture = NULL;
+		}
+		//CvCapture* capture = cvCreateFileCapture(aviFileName);
+		//cvQueryFrame( capture );
+		//*Frames = (int) cvGetCaptureProperty( capture , CV_CAP_PROP_FRAME_COUNT );
+		//cvReleaseCapture( &capture );
 	}
 	*Width  = avi_info.dwWidth;
 	//*Width  = (avi_info.dwWidth % 4 == 0) ? avi_info.dwWidth : (avi_info.dwWidth/4)*4+4;
@@ -4493,7 +4500,7 @@ CICANDIDoc::CICANDIDoc()
 	aoslo_movie.bGrAomOn		= TRUE;
 //	m_strStimVideoName          = "";
 	m_strStimVideoName          = NULL;
-	m_nMovieLength				= 30;
+	m_nMovieLength				= GRABBER_FRAME_RATE;//30;
 	g_StimulusPos0Gain.x        = 0;
 	g_StimulusPos0Gain.y        = 0;
 

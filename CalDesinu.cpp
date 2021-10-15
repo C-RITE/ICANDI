@@ -42,7 +42,7 @@ CCalDesinu::CCalDesinu(CWnd* pParent /*=NULL*/)
 	m_nGridSize      = 0.1;
 	m_nGridNumb      = 30;
 	m_nFreqHorz      = 20000000;
-	m_nFreqVert      = 15785;
+	m_nFreqVert      = HORIZONTAL_FREQ;//15785;
 	m_PixPerDegX     = 0;
 	m_PixPerDegY     = 0;
 
@@ -164,8 +164,9 @@ BOOL CCalDesinu::OnInitDialog()
 	m_penBlue.CreatePen(PS_SOLID, 1, RGB(0, 0, 255));
 	m_penGreen.CreatePen(PS_SOLID, 1, RGB(0, 191, 0));
 
+	std::string horizontal_freq = std::to_string(HORIZONTAL_FREQ);
 	SetDlgItemText(IDC_EDIT_FREQ_HORZ, "20000000");
-	SetDlgItemText(IDC_EDIT_FREQ_VERT, "15785");
+	SetDlgItemText(IDC_EDIT_FREQ_VERT, horizontal_freq.c_str());//"15785");
 	SetDlgItemText(IDC_EDIT_GRID_SIZE, "0.1");
 	SetDlgItemText(IDC_EDIT_GRID_NUMB, "10");
 
