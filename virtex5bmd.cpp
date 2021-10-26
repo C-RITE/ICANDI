@@ -23,6 +23,9 @@ extern void DLLCALLCONV VIRTEX5_IntHandler(PVOID pData);
 extern BOOL g_bKernelPlugin;
 extern VIDEO_INFO        g_VideoInfo;
 extern ICANDIParams    g_ICANDIParams;
+extern unsigned short* g_usRed_LUT;
+extern unsigned short* g_usGreen_LUT;
+extern unsigned short* g_usIR_LUT;
 
 BOOL DeviceValidate(PWDC_DEVICE pDev)
 {
@@ -1409,7 +1412,7 @@ void CVirtex5BMD::AppLoadStimulus8bits(WDC_DEVICE_HANDLE hDev, unsigned short *b
 	for (i = 0; i < dword; i ++) {
 		for (j = 0; j < 4; j ++) {
 			if (4*i+j < nx*ny)
-				bytes[j] = (BYTE)(buffer[4*i+j]>>6);
+				bytes[j] = (BYTE)g_usIR_LUT[buffer[4 * i + j] / 10];
 			else 
 				bytes[j] = 0;
 		}
@@ -1431,71 +1434,132 @@ void CVirtex5BMD::AppLoadStimulus8bits(WDC_DEVICE_HANDLE hDev, unsigned short *b
 }
 
 
-void CVirtex5BMD::AppLoadStimulus14bits(WDC_DEVICE_HANDLE hDev, unsigned short *buffer, int nx, int ny, int channelID)
+void CVirtex5BMD::AppLoadStimulus14bitsRed(WDC_DEVICE_HANDLE hDev, unsigned short* buffer, int nx, int ny)
 {
-	UINT32 regData1, reg1, reg2, reg3, reg4, address, addr16;
+	UINT32 regData1, reg1, reg2, reg3, address, addr16;
 	int    i, j, dword;
 	short  word[2];
 
 	// write stimulus boundary
-	if (channelID == 1) {
-		// red channel
-		regData1 = VIRTEX5_ReadReg32(hDev, VIRTEX5_STIMULUS_X_BOUND);
-		regData1 = regData1 >> 16;
-		regData1 = regData1 << 16;	// save high 16 bits for ir channel
-		reg1 = nx/2;
-		reg2 = reg1 << 8;
-		VIRTEX5_WriteReg32(hDev, VIRTEX5_STIMULUS_X_BOUND,  regData1+reg1+reg2);
-	} else if (channelID == 2) {
-		// green channel
-		regData1 = VIRTEX5_ReadReg32(hDev, VIRTEX5_STIMULUS_X_BOUND);
-		regData1 = regData1 << 16;
-		regData1 = regData1 >> 16;	// save low 16 bits for red channel
-		reg1 = nx/2;
-		reg3 = reg1 << 16;
-		reg4 = reg1 << 24;
-		VIRTEX5_WriteReg32(hDev, VIRTEX5_STIMULUS_X_BOUND,  regData1+reg3+reg4);
-	} else {
-		// both channels
-		reg1 = nx/2;
-		reg2 = reg1 << 8;
-		reg3 = reg1 << 16;
-		reg4 = reg1 << 24;
-		VIRTEX5_WriteReg32(hDev, VIRTEX5_STIMULUS_X_BOUND,  reg1+reg2+reg3+reg4);
-	}
+	// red channel
+	regData1 = VIRTEX5_ReadReg32(hDev, VIRTEX5_STIMULUS_X_BOUND);
+	regData1 = regData1 >> 16;
+	regData1 = regData1 << 16;	// save high 16 bits for red channel
+	reg1 = nx / 2;
+	reg2 = reg1 << 8;
+	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIMULUS_X_BOUND, regData1 + reg1 + reg2);
 
 	// set ram status to "read/write"
-	switch (channelID) {
-	case 0:
-		address  = BIT19 | BIT18;
-		break;
-	case 1:
-		address  = BIT18;
-		break;
-	case 2:
-		address  = BIT19;
-		break;
-	default:
-		address  = BIT19 | BIT18;
-		break;
-	}
+	address = BIT18;
 
 	// upload stimulus pattern to FPGA
-	dword = nx*ny/2 + nx*3;
+	dword = nx * ny / 2 + nx * 3;
 	reg1 = reg2 = reg3 = 0;
-	dword = (dword>=16384) ? 16384 : dword;
-	for (i = 0; i < dword; i ++) {
-		for (j = 0; j < 2; j ++) {
-			if (2*i+j < nx*ny)
-				word[j] = buffer[2*i+j];
-			else 
+	dword = (dword >= 16384) ? 16384 : dword;
+	for (i = 0; i < dword; i++) {
+		for (j = 0; j < 2; j++) {
+			if (2 * i + j < nx * ny)
+				word[j] = g_usRed_LUT[buffer[2 * i + j]];
+			else
 				word[j] = 0;
 		}
 		reg1 = word[0];
 		reg2 = word[1] << 16;
 
 		regData1 = reg1 + reg2;
-		
+
+		addr16 = address + i;
+		// write address
+		VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, addr16);
+		// write 32-bit data
+		VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_DATA, regData1);
+	}
+
+	// set ram status to "read only"
+	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, 0);
+}
+
+
+void CVirtex5BMD::AppLoadStimulus14bitsGreen(WDC_DEVICE_HANDLE hDev, unsigned short* buffer, int nx, int ny)
+{
+	UINT32 regData1, reg1, reg2, reg3, reg4, address, addr16;
+	int    i, j, dword;
+	short  word[2];
+
+	// write stimulus boundary	
+	// green channel
+	regData1 = VIRTEX5_ReadReg32(hDev, VIRTEX5_STIMULUS_X_BOUND);
+	regData1 = regData1 << 16;
+	regData1 = regData1 >> 16;	// save low 16 bits for green channel
+	reg1 = nx / 2;
+	reg3 = reg1 << 16;
+	reg4 = reg1 << 24;
+	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIMULUS_X_BOUND, regData1 + reg3 + reg4);
+
+	// set ram status to "read/write"
+	address = BIT19;
+
+	// upload stimulus pattern to FPGA
+	dword = nx * ny / 2 + nx * 3;
+	reg1 = reg2 = reg3 = 0;
+	dword = (dword >= 16384) ? 16384 : dword;
+	for (i = 0; i < dword; i++) {
+		for (j = 0; j < 2; j++) {
+			if (2 * i + j < nx * ny)
+				word[j] = g_usGreen_LUT[buffer[2 * i + j]];
+			else
+				word[j] = 0;
+		}
+		reg1 = word[0];
+		reg2 = word[1] << 16;
+
+		regData1 = reg1 + reg2;
+
+		addr16 = address + i;
+		// write address
+		VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, addr16);
+		// write 32-bit data
+		VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_DATA, regData1);
+	}
+
+	// set ram status to "read only"
+	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, 0);
+}
+
+
+void CVirtex5BMD::AppLoadStimulus14bitsBoth(WDC_DEVICE_HANDLE hDev, unsigned short* buffer, int nx, int ny)
+{
+	UINT32 regData1, reg1, reg2, reg3, reg4, address, addr16;
+	int    i, j, dword;
+	short  word[2];
+
+	// write stimulus boundary	
+	// both channels
+	reg1 = nx / 2;
+	reg2 = reg1 << 8;
+	reg3 = reg1 << 16;
+	reg4 = reg1 << 24;
+	VIRTEX5_WriteReg32(hDev, VIRTEX5_STIMULUS_X_BOUND, reg1 + reg2 + reg3 + reg4);
+
+	// set ram status to "read/write"
+	address = BIT19 | BIT18;
+
+	// upload stimulus pattern to FPGA
+	dword = nx * ny / 2 + nx * 3;
+	reg1 = reg2 = reg3 = 0;
+	dword = (dword >= 16384) ? 16384 : dword;
+	for (i = 0; i < dword; i++) {
+		for (j = 0; j < 2; j++) {
+			if (2 * i + j < nx * ny)
+				word[j] = buffer[2 * i + j];
+			else
+				word[j] = 0;
+		}
+		reg1 = word[0];
+		reg2 = word[1] << 16;
+
+		regData1 = reg1 + reg2;
+
 		addr16 = address + i;
 		// write address
 		VIRTEX5_WriteReg32(hDev, VIRTEX5_STIM_ADDRESS, addr16);

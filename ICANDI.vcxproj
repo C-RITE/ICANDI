@@ -90,6 +90,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -244,7 +246,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(CUDA_PATH)/include;c:\ovvc\include;c:\opencv\build\include;C:\Program Files\MATLAB\R2014a\extern\include;C:\CMathVC\Include;c:\fpga_software;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CUDA_PATH)/include;c:\ovvc\include;C:\opencv\build\include;C:\Program Files\MATLAB\R2014a\extern\include;c:\fpga_software;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeaderOutputFile>.\Debug/MSCGui.pch</PrecompiledHeaderOutputFile>
@@ -261,10 +263,10 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>utils\TrackKernelD.lib;utils\inpout32.lib;utils\slr.lib;mclmcrrt.lib;Ws2_32.lib;wdapi1000.lib;vfw32.lib;winmm.lib;OVVC8M.LIB;OVVC8MTD.lib;cudart.lib;cutil32D.lib;cufft.lib;opencv_highgui249d.lib;opencv_core249d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>utils\x64\trackkernel.lib;utils\freeimage\x64\FreeImage.lib;utils\inpoutx64.lib;GdiPlus.lib;utils\x64\slr.lib;Ws2_32.lib;vfw32.lib;winmm.lib;mclmcrrt.lib;ovvcx64mtd.lib;ovvc64_8d.lib;ovvc64_9m.lib;cudart.lib;cufft.lib;cufftw.lib;wdapi1010.lib;opencv_world453d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Debug/ICANDI.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(CUDA_PATH)/lib/$(Platform);C:\Program Files\MATLAB\R2011a\extern\lib\win32\microsoft;c:\fpga_software;c:\ovvc\lib;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\common\lib;c:\opencv\x86\vc9\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(CUDA_PATH)/lib/$(Platform);C:\Program Files\MATLAB\R2014a\extern\lib\win64\microsoft;c:\ovvc\lib;C:\opencv\build\x64\vc15\lib;C:\FPGA_Software_Win7x64\WinDriver\lib\amd64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>MSVCRT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/MSCGui.pdb</ProgramDatabaseFile>
@@ -277,6 +279,11 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\Debug/MSCGui.bsc</OutputFile>
     </Bscmake>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)utils\x64\TrackKernel.dll" "$(SolutionDir)$(Configuration)\TrackKernel.dll"
+copy /Y "$(SolutionDir)utils\x64\SLR.dll" "$(SolutionDir)$(Configuration)\SLR.dll"
+copy /Y "$(SolutionDir)utils\inpoutx64.dll" "$(SolutionDir)$(Configuration)\inpoutx64.dll"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CalDesinu.cpp" />

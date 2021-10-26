@@ -606,15 +606,15 @@ int CViewRawVideo::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	rect.top  = 512+110; rect.bottom = rect.top + 15;
 	m_lblBrightness.Create("Brightness : ",  WS_CHILD | WS_VISIBLE | SS_CENTER, 
 					 rect, this, IDL_BRIGHTNESS);
-	msg.Format("Brightness : %3d", 255-g_nBrightness);
+	msg.Format("Brightness : %3d", 511-g_nBrightness);
 	m_lblBrightness.SetWindowText(msg);
 
 	rect.left -= 20;	 rect.right  = rect.left + 155;
 	rect.top  = 512+130; rect.bottom = rect.top + 15;
 	m_sldBrightness.Create(WS_CHILD | WS_VISIBLE | WS_TABSTOP | SBS_HORZ, rect, this, IDS_BRIGHTNESS);
 	m_sldBrightness.EnableWindow(true);
-	m_sldBrightness.SetScrollRange(0,255);
-	m_sldBrightness.SetScrollPos(255-g_nBrightness);
+	m_sldBrightness.SetScrollRange(0,511);
+	m_sldBrightness.SetScrollPos(511-g_nBrightness);
 	m_sldBrightness.SetFocus();
 
 	
@@ -623,15 +623,15 @@ int CViewRawVideo::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	rect.top  = 512+110; rect.bottom = rect.top + 15;
 	m_lblContrast.Create("Contrast : ",  WS_CHILD | WS_VISIBLE | SS_CENTER, 
 					 rect, this, IDL_CONTRAST);
-	msg.Format("Contrast : %3d", 127-g_nContrast);
+	msg.Format("Contrast : %3d", 511-g_nContrast);
 	m_lblContrast.SetWindowText(msg);
 
 	rect.left -= 20;	 rect.right  = rect.left + 155;
 	rect.top  = 512+130; rect.bottom = rect.top + 15;
 	m_sldContrast.Create(WS_CHILD | WS_VISIBLE | WS_TABSTOP | SBS_HORZ, rect, this, IDS_CONTRAST);
 	m_sldContrast.EnableWindow(true);
-	m_sldContrast.SetScrollRange(0,127);
-	m_sldContrast.SetScrollPos(127-g_nContrast);
+	m_sldContrast.SetScrollRange(0,511);
+	m_sldContrast.SetScrollPos(511-g_nContrast);
 	m_sldContrast.SetFocus();
 	
 	return 0;
@@ -834,10 +834,10 @@ void CViewRawVideo::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 	switch (pScrollBar->GetDlgCtrlID()) {
 	case IDS_BRIGHTNESS:
-		upBound = 255;
+		upBound = 511;
 		break;
 	case IDS_CONTRAST:
-		upBound = 127;
+		upBound = 511;
 		break;	
 	default:
 		return;
@@ -894,7 +894,7 @@ void CViewRawVideo::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 
 	switch (pScrollBar->GetDlgCtrlID()) {		
 	case IDS_BRIGHTNESS:				
-		g_nBrightness = 255-nTemp1;
+		g_nBrightness = 511-nTemp1;
 		//send updated brightness to FPGA
 		UpdateBrightnessContrast(TRUE);
 
@@ -903,7 +903,7 @@ void CViewRawVideo::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		break;
 
 	case IDS_CONTRAST:	
-		g_nContrast = 127-nTemp1;
+		g_nContrast = 511-nTemp1;
 		//send updated brightness to FPGA
 		UpdateBrightnessContrast(FALSE);
 
@@ -923,24 +923,24 @@ void CViewRawVideo::UpdateBrightnessContrast(BOOL brightness)
 	BYTE    hiByte, loByte, regValret;
 
 	if (brightness) {//update brightness
-		regData = (UINT32)(g_nBrightness);
-		regData = regData << 23;
-		hiByte = (BYTE)(regData >> 24);
-		m_regAddr = 0x0B; m_regVal = hiByte;				
+		regData = (UINT16)(g_nBrightness);
+		hiByte = (BYTE)(regData >> 2);
+		m_regAddr = 0x0B; m_regVal = hiByte;
 		g_objVirtex5BMD.ReadWriteI2CRegister(g_hDevVirtex5, FALSE, 0x4c000000, m_regAddr, m_regVal, &regValret);
 		Sleep(25);
-		regData = (UINT32)(g_nBrightness);
-		regData = regData << 31;
-		loByte = (BYTE)(regData >> 24);
-		m_regAddr = 0x0C; m_regVal = loByte;				
+		loByte = (BYTE)(regData << 6);
+		m_regAddr = 0x0C; m_regVal = loByte;
 		g_objVirtex5BMD.ReadWriteI2CRegister(g_hDevVirtex5, FALSE, 0x4c000000, m_regAddr, m_regVal, &regValret);
 		Sleep(25);
 	}
 	else {//update contrast
-		m_regAddr = 0x05; m_regVal = g_nContrast;
+		regData = (UINT16)(g_nContrast);
+		hiByte = regData >> 2;
+		m_regAddr = 0x05; m_regVal = hiByte;
 		g_objVirtex5BMD.ReadWriteI2CRegister(g_hDevVirtex5, FALSE, 0x4c000000, m_regAddr, m_regVal, &regValret);
 		Sleep(25);
-		m_regAddr = 0x06; m_regVal = 0x00000000;
+		loByte = regData << 6;
+		m_regAddr = 0x06; m_regVal = loByte;
 		g_objVirtex5BMD.ReadWriteI2CRegister(g_hDevVirtex5, FALSE, 0x4c000000, m_regAddr, m_regVal, &regValret);
 		Sleep(25);
 	}

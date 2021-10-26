@@ -3345,32 +3345,12 @@ DWORD WINAPI CICANDIDoc::ThreadLoadData2FPGA(LPVOID pParam)
 		// waiting for event 
 		switch (::MsgWaitForMultipleObjects(2, fpgaHandles, FALSE, INFINITE, QS_ALLEVENTS)) {
 		case WAIT_OBJECT_0:
-		//	if (aoslo_movie.bWithStimVideo == FALSE) {
-/*				// load IR stimulus pattern to FPGA
-				g_objVirtex5BMD.AppLoadStimulus(g_hDevVirtex5, aoslo_movie.stim_ir_buffer, aoslo_movie.stim_ir_nx, aoslo_movie.stim_ir_ny, 3);
-				// load green stimulus pattern to FPGA
-				g_objVirtex5BMD.AppLoadStimulus(g_hDevVirtex5, aoslo_movie.stim_gr_buffer, aoslo_movie.stim_gr_nx, aoslo_movie.stim_gr_ny, 2);
-				// load Red stimulus pattern to FPGA
-				g_objVirtex5BMD.AppLoadStimulus(g_hDevVirtex5, aoslo_movie.stim_rd_buffer, aoslo_movie.stim_rd_nx, aoslo_movie.stim_rd_ny, 1);
-		//	} else {
-		//		g_objVirtex5BMD.AppLoadStimulus(g_hDevVirtex5, aoslo_movie.stim_rd_buffer, aoslo_movie.stim_rd_nx, aoslo_movie.stim_rd_ny, 0);
-		//	}
-				*/
 			// load IR stimulus pattern to FPGA
 			g_objVirtex5BMD.AppLoadStimulus8bits(g_hDevVirtex5, aoslo_movie.stim_ir_buffer, aoslo_movie.stim_ir_nx, aoslo_movie.stim_ir_ny);
-
-			if (aoslo_movie.bWithStimVideo == FALSE) {
-				// load green stimulus pattern to FPGA
-				g_objVirtex5BMD.AppLoadStimulus14bits(g_hDevVirtex5, aoslo_movie.stim_gr_buffer, aoslo_movie.stim_gr_nx, aoslo_movie.stim_gr_ny, 2);
-				// load Red stimulus pattern to FPGA
-				g_objVirtex5BMD.AppLoadStimulus14bits(g_hDevVirtex5, aoslo_movie.stim_rd_buffer, aoslo_movie.stim_rd_nx, aoslo_movie.stim_rd_ny, 1);
-			} else {
-				g_objVirtex5BMD.AppLoadStimulus14bits(g_hDevVirtex5, aoslo_movie.stim_ir_buffer, aoslo_movie.stim_ir_nx, aoslo_movie.stim_ir_ny, 0);
-			}
-
-			//fprintf(g_fp, "%d: rdx-%d, rdy-%d,     irx-%d, iry-%d\n", g_frameIndex, 
-			//				aoslo_movie.stim_rd_nx, aoslo_movie.stim_rd_ny, aoslo_movie.stim_gr_nx, aoslo_movie.stim_gr_ny);
-
+			// load green stimulus pattern to FPGA
+			g_objVirtex5BMD.AppLoadStimulus14bitsGreen(g_hDevVirtex5, aoslo_movie.stim_gr_buffer, aoslo_movie.stim_gr_nx, aoslo_movie.stim_gr_ny);
+			// load Red stimulus pattern to FPGA
+			g_objVirtex5BMD.AppLoadStimulus14bitsRed(g_hDevVirtex5, aoslo_movie.stim_rd_buffer, aoslo_movie.stim_rd_nx, aoslo_movie.stim_rd_ny);
 			break;
 		case WAIT_OBJECT_0+1:
 			lut_loc_buf1 = new unsigned short [g_iStimulusSizeX_GR+2];
@@ -5327,14 +5307,14 @@ void CICANDIDoc::OnUpdateMovieNormalize(CCmdUI* pCmdUI)
 
 void CICANDIDoc::UpdateImageGrabber()
 {
-	FILE    *fp;
+	FILE* fp;
 	unsigned short width, height, offset_line, offset_pixel;
-	unsigned char  spacing, *adc_regs;
+	unsigned char  spacing, * adc_regs;
 	UINT32   interval;//, reg32, regTemp;
 	int      ret;
 	BOOL     bFrameByLine, bVedge;
 
-	adc_regs = new unsigned char [48];
+	adc_regs = new unsigned char[48];
 	if (adc_regs == NULL) {
 		((CICANDIApp*)AfxGetApp())->m_bInvalidDevice = TRUE;
 		AfxMessageBox("Failed to allocate memory for Image Grabber Configuration File", MB_ICONEXCLAMATION);
@@ -5349,43 +5329,43 @@ void CICANDIDoc::UpdateImageGrabber()
 	}
 
 	// image width
-	ret = fread(&width, sizeof(unsigned short), 1, fp);  
-	if (ret != 1) 
+	ret = fread(&width, sizeof(unsigned short), 1, fp);
+	if (ret != 1)
 		((CICANDIApp*)AfxGetApp())->m_bInvalidDevice = TRUE;
 	else
 		g_VideoInfo.img_width = width;
 	// image height
-	ret = fread(&height, sizeof(unsigned short), 1, fp);  
+	ret = fread(&height, sizeof(unsigned short), 1, fp);
 	if (ret != 1) ((CICANDIApp*)AfxGetApp())->m_bInvalidDevice = TRUE;
 	g_VideoInfo.img_height = 512;
 	// line spacing
-	ret = fread(&spacing, sizeof(unsigned char), 1, fp);  
-	if (ret != 1) 
+	ret = fread(&spacing, sizeof(unsigned char), 1, fp);
+	if (ret != 1)
 		((CICANDIApp*)AfxGetApp())->m_bInvalidDevice = TRUE;
 	else
 		g_VideoInfo.line_spacing = spacing;
 	// address interval
-	ret = fread(&interval, sizeof(UINT32), 1, fp);  
-	if (ret != 1) 
+	ret = fread(&interval, sizeof(UINT32), 1, fp);
+	if (ret != 1)
 		((CICANDIApp*)AfxGetApp())->m_bInvalidDevice = TRUE;
 	else
 		g_VideoInfo.addr_interval = interval;
 	// offset line
-	ret = fread(&offset_line, sizeof(unsigned short), 1, fp); 
-	if (ret != 1) 
+	ret = fread(&offset_line, sizeof(unsigned short), 1, fp);
+	if (ret != 1)
 		((CICANDIApp*)AfxGetApp())->m_bInvalidDevice = TRUE;
 	else
 		g_VideoInfo.offset_line = offset_line;
 	// offset pixel
-	ret = fread(&offset_pixel, sizeof(unsigned short), 1, fp); 
-	if (ret != 1) 
+	ret = fread(&offset_pixel, sizeof(unsigned short), 1, fp);
+	if (ret != 1)
 		((CICANDIApp*)AfxGetApp())->m_bInvalidDevice = TRUE;
 	else
 		g_VideoInfo.offset_pixel = offset_pixel;
-	ret = fread(&bFrameByLine, sizeof(BOOL), 1, fp); 
+	ret = fread(&bFrameByLine, sizeof(BOOL), 1, fp);
 	g_objVirtex5BMD.AppSetFrameCounter(g_hDevVirtex5, bFrameByLine);
 
-	ret = fread(&bVedge, sizeof(BOOL), 1, fp); 
+	ret = fread(&bVedge, sizeof(BOOL), 1, fp);
 	g_objVirtex5BMD.AppVsyncTrigEdge(g_hDevVirtex5, bVedge);
 
 	ret = fread(adc_regs, sizeof(unsigned char), 47, fp);
@@ -5401,13 +5381,13 @@ void CICANDIDoc::UpdateImageGrabber()
 
 	((CICANDIApp*)AfxGetApp())->m_bInvalidDevice = FALSE;
 
-	if (g_VideoInfo.video_in != NULL) delete [] g_VideoInfo.video_in;
-	g_VideoInfo.video_in  = new unsigned char [g_VideoInfo.img_width*g_VideoInfo.img_height];
-	if (g_VideoInfo.video_in == NULL) 
+	if (g_VideoInfo.video_in != NULL) delete[] g_VideoInfo.video_in;
+	g_VideoInfo.video_in = new unsigned char[g_VideoInfo.img_width * g_VideoInfo.img_height];
+	if (g_VideoInfo.video_in == NULL)
 		AfxMessageBox("Error! Can't allocate memory space for video.");
 
 	// number of PCIe packets in each transaction
-	g_VideoInfo.tlp_counts  = g_VideoInfo.img_width*g_VideoInfo.line_spacing/128 + 1;
+	g_VideoInfo.tlp_counts = g_VideoInfo.img_width * g_VideoInfo.line_spacing / 128 + 1;
 	// end line ID of the first image block/stripe
 	g_VideoInfo.end_line_ID = g_VideoInfo.line_spacing;
 
@@ -5417,12 +5397,21 @@ void CICANDIDoc::UpdateImageGrabber()
 	// update ADC on-chip registers
 	g_objVirtex5BMD.UpdateRuntimeRegisters(g_hDevVirtex5, adc_regs);
 
-	g_nContrast = adc_regs[0x05];
-	BYTE regTemp = adc_regs[0x0B] << 1;
-	regTemp = regTemp + (adc_regs[0x0C]>>7);
-	g_nBrightness = regTemp;
+	// 3. Brightness (0x0B, 0x0C)
+	ret = adc_regs[0x0B];
+	ret = ret << 8;
+	ret = ret + adc_regs[0x0C];
+	ret = ret >> 6;
+	g_nBrightness = ret;
 
-	g_objVirtex5BMD.WritePupilMask(g_hDevVirtex5, 0, 16, g_VideoInfo.img_width-32-16, g_VideoInfo.img_height-32);
+	// 4. Constrast  (0x05, 0x06)
+	ret = adc_regs[0x05];
+	ret = ret << 8;
+	ret = ret + adc_regs[0x06];
+	ret = ret >> 6;
+	g_nContrast = ret;
+
+	//g_objVirtex5BMD.WritePupilMask(g_hDevVirtex5, 0, 16, g_VideoInfo.img_width-32-16, g_VideoInfo.img_height-32);
 }
 
 BOOL CICANDIDoc::Load14BITbuffer(CString filename, unsigned short **stim_buffer, int *width, int *height)
@@ -5455,7 +5444,7 @@ BOOL CICANDIDoc::Load14BITbuffer(CString filename, unsigned short **stim_buffer,
 				status = FALSE;
 			} else {
 				MD_transpose(&buffer, &buffer, *height, *width);
-				VD_mulC(buffer, buffer, *width * *height, 16383.);
+				VD_mulC(buffer, buffer, *width * *height, 1000.);
 				
 				if (!*stim_buffer) 
 					*stim_buffer = new unsigned short [((CICANDIApp*)AfxGetApp())->m_imageSizeX*((CICANDIApp*)AfxGetApp())->m_imageSizeY];
@@ -5525,7 +5514,7 @@ BOOL CICANDIDoc::Load8BITbmp(CString filename, unsigned short**stim_buffer, int 
 				
 				for (i = 0; i < bitmap.bmWidth*bitmap.bmHeight; i ++) {
 					k = (buffer[n*i]+(n>=2?buffer[n*i+1]:0)+(n>=3?buffer[n*i+2]:0))/(n==4?3:n);
-					buf[i] = (unsigned short)(k*64.24);
+					buf[i] = (unsigned short)((k / 255.) * 1000.);
 				}
 
 				switch (g_ICANDIParams.FRAME_ROTATION)	{
@@ -6258,15 +6247,15 @@ void CICANDIDoc::Load_Default_Stimulus(bool inv)
 	aoslo_movie.stim_ir_nx      = STIMULUS_SIZE_X;
 	aoslo_movie.stim_ir_ny      = STIMULUS_SIZE_Y;
 	stim_buffer = new unsigned short [aoslo_movie.stim_rd_nx*aoslo_movie.stim_rd_ny];
-	for (i = 0; i < aoslo_movie.stim_rd_nx*aoslo_movie.stim_rd_ny; i ++) stim_buffer[i] = inv?0x0:0x3fff;
+	for (i = 0; i < aoslo_movie.stim_rd_nx*aoslo_movie.stim_rd_ny; i ++) stim_buffer[i] = inv? 0x0 : 0x3fff;
 	g_objVirtex5BMD.AppLoadStimulus(g_hDevVirtex5, stim_buffer, aoslo_movie.stim_rd_nx, aoslo_movie.stim_rd_ny, 1);
 	memcpy(aoslo_movie.stim_rd_buffer, stim_buffer, aoslo_movie.stim_rd_nx*aoslo_movie.stim_rd_ny*sizeof(short));
-	for (i = 0; i < aoslo_movie.stim_rd_nx*aoslo_movie.stim_rd_ny; i ++) stim_buffer[i] = inv?0x0:0x3fff;
+	for (i = 0; i < aoslo_movie.stim_rd_nx*aoslo_movie.stim_rd_ny; i ++) stim_buffer[i] = inv? 0x0 : 0x3fff;
 	g_objVirtex5BMD.AppLoadStimulus(g_hDevVirtex5, stim_buffer, aoslo_movie.stim_rd_nx, aoslo_movie.stim_rd_ny, 2);
-	memcpy(aoslo_movie.stim_gr_buffer, stim_buffer, aoslo_movie.stim_rd_nx*aoslo_movie.stim_rd_ny*sizeof(short));	
-	for (i = 0; i < aoslo_movie.stim_ir_nx*aoslo_movie.stim_ir_ny; i ++) stim_buffer[i] = inv?0x3fff:0x0;
+	memcpy(aoslo_movie.stim_gr_buffer, stim_buffer, aoslo_movie.stim_gr_nx*aoslo_movie.stim_gr_ny*sizeof(short));	
+	for (i = 0; i < aoslo_movie.stim_ir_nx*aoslo_movie.stim_ir_ny; i ++) stim_buffer[i] = inv? 0x3fff : 0x0;
 	g_objVirtex5BMD.AppLoadStimulus(g_hDevVirtex5, stim_buffer, aoslo_movie.stim_rd_nx, aoslo_movie.stim_rd_ny, 3);
-	memcpy(aoslo_movie.stim_ir_buffer, stim_buffer, aoslo_movie.stim_rd_nx*aoslo_movie.stim_rd_ny*sizeof(short));
+	memcpy(aoslo_movie.stim_ir_buffer, stim_buffer, aoslo_movie.stim_ir_nx*aoslo_movie.stim_ir_ny*sizeof(short));
 	delete [] stim_buffer;
 
 	g_iStimulusSizeX_RD    = aoslo_movie.stim_rd_nx;

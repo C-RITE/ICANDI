@@ -17,14 +17,14 @@
 #define KP_VRTX5_DRIVER_NAME "KP_VRTX5"
 #define VIRTEX5_SPACE AD_PCI_BAR0
 
-#define  SYSTEM_LATENCY_DAC8  13	// system latency with 8-bit DAC, in # of data clocks
+#define  SYSTEM_LATENCY_DAC8  0 	// system latency with 8-bit DAC, in # of data clocks
 #define  SYSTEM_LATENCY_DAC14 9		// system latency with 14-bit DAC, in # of data clocks,
 #define  STIM_CHANNEL_IR      1		//	.... DAC14 changed from 9 to X, 24.5.2017, WMH
 #define  STIM_CHANNEL_GR      2
 #define  STIM_CHANNEL_RD      3
 #define  STIM_CHANNEL_NU      4
 //#define  AOM_LATENCYX_IR	  10	//changed from 2 to 13, 24.5.2017, WMH; 11 for 788-driver, 10.09.2019, ND
-#define  AOM_LATENCYX_788	  10	// new version of "AOM_LATENCYX_IR" for an easy switch between imaging wavelengths
+#define  AOM_LATENCYX_788	  -7	// new version of "AOM_LATENCYX_IR" for an easy switch between imaging wavelengths
 #define  AOM_LATENCYX_840	  13	// new version of "AOM_LATENCYX_IR" for an easy switch between imaging wavelengths
 #define  AOM_LATENCYX_RED	  9		//changed from 12 to 10, 09.06.2017, ND; from 10 to -3, 18.07.2017 ND; from -3 to 10, 02.02.2018 ND; from 10 to 8, 18.07.2017 ND; from 8 to 10, 16.01.2019 ND; from 10 to 9, 10.09.2019 ND;
 #define  AOM_LATENCYX_GR	  4		//changed from 0 to X, 24.5.2017, WMH; from 0 to -8, 18.07.2017 ND; from -8 to 5, 02.02.2018 ND; from 5 to 3, 18.07.2017 ND; from 3 to 5, 16.01.2019 ND; from 5 to 4, 10.09.2019 ND;
@@ -209,7 +209,9 @@ public:
 	//void AppClearCriticalInfo(WDC_DEVICE_HANDLE hDev);
 	//void AppWriteCriticalInfo(WDC_DEVICE_HANDLE hDev, int targetY, float predictionTime);
 
-	void AppLoadStimulus14bits(WDC_DEVICE_HANDLE hDev, unsigned short *buffer, int nx, int ny, int channelID);
+	void AppLoadStimulus14bitsRed(WDC_DEVICE_HANDLE hDev, unsigned short* buffer, int nx, int ny);
+	void AppLoadStimulus14bitsGreen(WDC_DEVICE_HANDLE hDev, unsigned short* buffer, int nx, int ny);
+	void AppLoadStimulus14bitsBoth(WDC_DEVICE_HANDLE hDev, unsigned short* buffer, int nx, int ny);
 	void AppLoadStimulus8bits(WDC_DEVICE_HANDLE hDev, unsigned short *buffer, int nx, int ny);
 	void AppWriteWarpLUT(WDC_DEVICE_HANDLE hDev, int nSizeX, int nStretchedX, unsigned short *lut_buf, int nChannelID);
 	void AppWriteWarpWeights(WDC_DEVICE_HANDLE hDev, int nSizeX, UINT32 *stim_buf, int channelID);
