@@ -1297,6 +1297,14 @@ LRESULT CICANDIView::OnSendMovie(WPARAM wParam, LPARAM lParam)
 		OnPaint();
 		Invalidate(FALSE);
 		break;
+	case UPDATE_LASERCALIB_ON:
+		m_chkRedCal.SetCheck(0);
+		CalibrateRed();
+		break;
+	case UPDATE_LASERCALIB_OFF:
+		m_chkRedCal.SetCheck(1);
+		CalibrateRed();
+		break;
 	default:
 		break;
 	}

@@ -25,6 +25,8 @@ using std::bitset;
 #define INIT_ANIMATE_CTRL      -110
 #define UPDATE_AOMS_STATE	   -111
 #define UPDATE_PROCESSOR	   -112
+#define UPDATE_LASERCALIB_ON   -113
+#define UPDATE_LASERCALIB_OFF   -114
 //#define CLEAR_STIMULUS_POINT    127
 #define DELIVERY_MODE_FLAG      276
 #define SAVE_VIDEO_FLAG         277

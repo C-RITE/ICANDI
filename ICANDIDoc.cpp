@@ -3905,8 +3905,16 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 						}
 					}
 					break;
-				case 'L': //ignore first 3 parameters in this command and load stimuli								
-					if (ext == "Load") {
+				case 'L': //ignore first 3 parameters in this command and load stimuli
+					if (ext == "LaserCalibration")
+					{
+						ind = atoi(msg); //Turn om/off flag
+						if (ind)
+							g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0 UPDATE_LASERCALIB_ON);
+						else
+							g_viewMsgVideo->SendMessage(WM_MOVIE_SEND, 0 UPDATE_LASERCALIB_OFF);
+					}
+					else if (ext == "Load") {
 						//	g_nStimPosBak_Matlab.x = g_StimulusPosBak.x;
 						//	g_nStimPosBak_Matlab.y = g_StimulusPosBak.y;	
 						g_bMatlabCtrl = FALSE;
@@ -3926,8 +3934,8 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 						folder = msg.Right(msg.GetLength()-msg.ReverseFind('#')-1);//get the folder location of stimuli					
 						msg = msg.Left(msg.GetLength()-(msg.GetLength()-msg.ReverseFind('#')));	
 						len = atoi(msg.Right(msg.GetLength()-msg.ReverseFind('#')-1));
-						if (parent->LoadMultiStimuli_Matlab(len, folder, initials, i, ind, ext) == TRUE);//load into application buffers
-							//g_bMatlabCtrl = TRUE;//indicate application that matlab control is initiated
+						if (parent->LoadMultiStimuli_Matlab(len, folder, initials, i, ind, ext) == TRUE)	//load into application buffers
+							g_bMatlabCtrl = TRUE;//indicate application that matlab control is initiated
 					}
 					else if (ext == "Loop") {
 						g_bMatlab_Loop = atoi(msg);
@@ -4005,7 +4013,7 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 						mxArray *pa;
 						double* in;	
 
-						pmat = matOpen("G:\\Seqfile.mat", "r");
+						pmat = matOpen("D:\\TempExpiriments\\Seqfile.mat", "r");
 						if (pmat == NULL) 
 							break;
 
@@ -4218,6 +4226,50 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 						ind = atoi(msg.Left(msg.Find('#'))); 
 						g_RGBClkShiftsUser[1].y = ind;
 						g_viewMsgVideo->PostMessage(WM_MOVIE_SEND, 0, UPDATE_USER_TCA);
+					}
+					else if (ext == "UpdateLaserCalibration14Bit")
+					{
+						ind = atoi(msg.Left(msg.Find('#'))); //aom
+						i = atof(msg.Right(msg.GetLength() - msg.ReverseFind('#') - 1)); //bit value
+						switch (ind)
+						{
+						case 0: // IR
+							g_objVirtex5BMD.AppUpdateIRLaser(g_hDevVirtex5, (BYTE)i);
+							break;
+						case 1: // Red
+							g_objVirtex5BMD.AppUpdate14BITsLaserRed(g_hDevVirtex5, (unsigned short)i);
+							break;
+						case 2: // Green
+							g_objVirtex5BMD.AppUpdate14BITsLaserGR(g_hDevVirtex5, (unsigned short)i);
+							break;
+						default:
+							CString errMsg;
+							errMsg.Format("Failed to update unknown channel (14 bit): %d.", ind);
+							AfxMessageBox(errMsg, MB_ICONEXCLAMATION);
+							break;
+						}
+					}
+					else if (ext == "UpdateLaserCalibrationLUT")
+					{
+						ind = atoi(msg.Left(msg.Find('#'))); //aom
+						i = atof(msg.Right(msg.GetLength() - msg.ReverseFind('#') - 1)); // LUT index value
+						switch (ind)
+						{
+						case 0: // IR
+							g_objVirtex5BMD.AppUpdateIRLaser(g_hDevVirtex5, g_usIR_LUT[i]);
+							break;
+						case 1: // Red
+							g_objVirtex5BMD.AppUpdate14BITsLaserRed(g_hDevVirtex5, g_usRed_LUT[i]);
+							break;
+						case 2: // Green
+							g_objVirtex5BMD.AppUpdate14BITsLaserGR(g_hDevVirtex5, g_usGreen_LUT[i]);
+							break;
+						default:
+							CString errMsg;
+							errMsg.Format("Failed to update unknown channel (LUT): %d.", ind);
+							AfxMessageBox(errMsg, MB_ICONEXCLAMATION);
+							break;
+						}
 					}
 					break;
 				case 'V':
