@@ -12,6 +12,7 @@
 #include <fstream>
 #include "matrix.h"
 #include "utils/x64/slr.h"
+#include <iostream>
 
 #include "ICANDIParams.h"
 #include "StabFFT.h"
@@ -34,6 +35,9 @@ unsigned short  g_iStimulusSizeX_IR;
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#if _DEBUG
+std::ofstream messageLogFile;
+#endif
 // define 4 views for displaying videos and other messages
 CView        *g_viewMsgVideo;		// pointer to main control view
 CView        *g_viewRawVideo;		// pointer to raw video view
@@ -3783,6 +3787,8 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 	char seps[] = "\t", seps1[] = ","; //for parsing matlab sequence
 	BOOL bUpdate, bLoop, bTrigger;
 
+
+
 	while(TRUE) {
 		switch(::WaitForMultipleObjects(3, parent->m_eNetMsg, FALSE, INFINITE)) {//Process the message
 			case WAIT_OBJECT_0: //AO message
@@ -3864,6 +3870,11 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 		case WAIT_OBJECT_0+1: //Matlab message
 
 			msg = parent->m_strNetRecBuff[1];
+#if _DEBUG
+			if (messageLogFile.is_open())
+				messageLogFile << msg << std::endl;
+#endif
+
 			ext = msg.Left(msg.GetLength()-(msg.GetLength()-msg.Find('#',0)));
 			msg = msg.Right(msg.GetLength()-msg.Find('#',0)-1);//remove the command part
 			if (!msg.IsEmpty())
@@ -4021,6 +4032,14 @@ DWORD WINAPI CICANDIDoc::ThreadNetMsgProcess(LPVOID pParam)
 						while (pa!=NULL)
 						{
 							in = mxGetPr(pa);
+							
+#if _DEBUG
+							if (messageLogFile.is_open())
+							{
+								messageLogFile << name << " " << *in << std::endl;
+							}
+#endif
+
 							if (!strcmp(name, "aom0seq")) {
 								VD_trunctoUS(g_nSequence_Matlab[0], in, g_nFlashCount);
 							}
@@ -4830,6 +4849,9 @@ CICANDIDoc::CICANDIDoc()
 	for (int i = 0; i < 512; i++)
 		linStretch[i] = i;
 
+#if _DEBUG
+	messageLogFile.open("D:\\MessageLog.txt");
+#endif
 	// for testing purpose only
 	// stack stimuli on raw image
 //	g_objVirtex5BMD.AppSetADCchannel(g_hDevVirtex5, 3);
@@ -4931,6 +4953,10 @@ CICANDIDoc::~CICANDIDoc()
     timeKillEvent(m_idTimerEvent);
     // reset the timer
     timeEndPeriod (m_uResolution);
+
+#if _DEBUG
+	messageLogFile.close();
+#endif
 }
 
 BOOL CICANDIDoc::OnNewDocument()
