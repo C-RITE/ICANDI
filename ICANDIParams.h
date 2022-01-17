@@ -404,7 +404,7 @@ public:
 		// desinusoiding look up table
 		::WritePrivateProfileString("FrameInfo", "DesinusoidLUT", fnameLUT, filename);
 		bitset<9> WriteMarkFlagsbt;
-		for (int i=0; i<9; i++)
+		for (int i = 0; i < 9; i++)
 			WriteMarkFlagsbt[i] = WriteMarkFlags[i];
 		flags = WriteMarkFlagsbt.to_ulong();
 		// Write Mark flags status

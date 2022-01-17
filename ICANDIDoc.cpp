@@ -4783,8 +4783,10 @@ CICANDIDoc::CICANDIDoc()
  	thd_handle[6] = CreateThread(NULL, 0, ThreadNetMsgProcess, this, 0, &thdid_handle[6]);
 	SetThreadPriority(thd_handle[6], THREAD_PRIORITY_NORMAL);
 
-	m_bMatlab = false;
-	if(mclInitializeApplication(NULL,0))
+	m_bMatlab = false;	
+	const char* args[] = { "-nojvm" };
+	const int count = sizeof(args) / sizeof(args[0]);
+	if (mclInitializeApplication(args, count))
 		if (SLRInitialize())
 		{
 			m_bMatlab = true;

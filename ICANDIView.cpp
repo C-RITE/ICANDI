@@ -1187,7 +1187,7 @@ void CICANDIView::EnableSLR(){
 void CICANDIView::UpdateOldRef()
 {	
 	CICANDIDoc* pDoc = GetDocument();	
-	char     BASED_CODE szFilter[] = "TIF Files (*.tif)|*.tif|";
+	char     BASED_CODE szFilter[] = "TIF Files (*.tif; *.tiff)|*.tif; *.tiff|";
 	CString oldreffname, oldreffname_bk;
 	// open an old ref file
 	CFileDialog fd(TRUE, "tif", NULL, NULL, szFilter);

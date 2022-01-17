@@ -153,7 +153,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(CUDA_PATH)/include;c:\ovvc\include;C:\opencv\build\include;C:\Program Files\MATLAB\R2014a\extern\include;c:\fpga_software;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CUDA_PATH)/include;c:\Optivec\include;C:\opencv\build\include;C:\Program Files\MATLAB\MATLAB Runtime\v901\extern\include;c:\fpga_software;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -172,10 +172,10 @@
     </ResourceCompile>
     <Link>
       <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>utils\x64\trackkernel.lib;utils\freeimage\x64\FreeImage.lib;utils\inpoutx64.lib;GdiPlus.lib;utils\x64\slr.lib;Ws2_32.lib;vfw32.lib;winmm.lib;mclmcrrt.lib;ovvcx64mtr.lib;ovvc64_8d.lib;ovvc64_9m.lib;cudart.lib;cufft.lib;cufftw.lib;wdapi1010.lib;opencv_world453.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>utils\x64\trackkernel.lib;utils\freeimage\x64\FreeImage.lib;utils\inpoutx64.lib;GdiPlus.lib;utils\x64\slr.lib;Ws2_32.lib;vfw32.lib;winmm.lib;mclmcrrt.lib;ovvcx64mtr.lib;ovvc64_9m.lib;cudart.lib;cufft.lib;cufftw.lib;wdapi1010.lib;opencv_world453.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\Release/ICANDI.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(CUDA_PATH)/lib/$(Platform);C:\Program Files\MATLAB\R2014a\extern\lib\win64\microsoft;c:\ovvc\lib;C:\opencv\build\x64\vc15\lib;C:\FPGA_Software_Win7x64\WinDriver\lib\amd64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(CUDA_PATH)/lib/$(Platform);c:\Optivec\lib;C:\opencv\build\x64\vc15\lib;C:\FPGA_Software_Win7x64\WinDriver\lib\amd64;C:\Program Files\MATLAB\MATLAB Runtime\v901\extern\lib\win64\microsoft;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>MSVCRT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ProgramDatabaseFile>.\Release/MSCGui.pdb</ProgramDatabaseFile>
